@@ -53,6 +53,15 @@ public class SocketEscritura extends Thread {
                     instruccionRealizada = ois.readBoolean();
                     SocketManager.getSocket().close();
                     break;
+
+                case "IniciarSesion":
+                    dos.writeUTF("IniciarSesion");
+                    DTOUsuario usuario = new DTOUsuario(nombre.getText().toString(),password.getText().toString());
+                    oos.writeObject(usuario);
+                    oos.flush();
+                    instruccionRealizada = ois.readBoolean();
+                    SocketManager.getSocket().close();
+                    break;
             }
         }catch (IOException ioException){
             ioException.printStackTrace();
