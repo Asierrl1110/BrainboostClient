@@ -8,30 +8,43 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
+import modelo.DTOMazo;
 import modelo.DTOUsuario;
 
-public class SocketEscritura extends Thread {
+public class SocketConnection extends Thread {
 
-    private String caso;
+    private String caso, nombreUsuario, claveUsuario, nombreMazo, categoriaMazo;
+
+    private int idUsuario, idMazo;
+
+    public void setIdUsuario(int idUsuario) {
+        this.idUsuario = idUsuario;
+    }
 
     private boolean instruccionRealizada;
 
-    private EditText nombre, password;
-
-    public SocketEscritura(String caso){
-        this.caso=caso;
+    public void setNombreMazo(String nombreMazo) {
+        this.nombreMazo = nombreMazo;
     }
 
-    public void setPassword(EditText password) {
-        this.password = password;
+    public void setCategoriaMazo(String categoriaMazo) {
+        this.categoriaMazo = categoriaMazo;
     }
 
-    public void setNombre(EditText nombre){
-        this.nombre = nombre;
+    public void setNombreUsuario(String nombreUsuario) {
+        this.nombreUsuario = nombreUsuario;
+    }
+
+    public void setClaveUsuario(String claveUsuario) {
+        this.claveUsuario = claveUsuario;
     }
 
     public boolean isInstruccionRealizada() {
         return instruccionRealizada;
+    }
+
+    public SocketConnection(String caso){
+        this.caso=caso;
     }
 
     public void run(){
@@ -47,7 +60,7 @@ public class SocketEscritura extends Thread {
             switch (caso){
                 case "Registrarse":
                     dos.writeUTF("Registrarse");
-                    DTOUsuario nuevoUsuario = new DTOUsuario(nombre.getText().toString(),password.getText().toString());
+                    DTOUsuario nuevoUsuario = new DTOUsuario(nombreUsuario,claveUsuario);
                     oos.writeObject(nuevoUsuario);
                     oos.flush();
                     instruccionRealizada = ois.readBoolean();
@@ -56,8 +69,21 @@ public class SocketEscritura extends Thread {
 
                 case "IniciarSesion":
                     dos.writeUTF("IniciarSesion");
-                    DTOUsuario usuario = new DTOUsuario(nombre.getText().toString(),password.getText().toString());
+                    DTOUsuario usuario = new DTOUsuario(nombreUsuario,claveUsuario);
                     oos.writeObject(usuario);
+                    oos.flush();
+                    instruccionRealizada = ois.readBoolean();
+                    if(instruccionRealizada){
+                        usuario.setId(ois.readInt());
+                        ZonaCompartida.setUsuarioRegistrado(usuario);
+                    }
+                    SocketManager.getSocket().close();
+                    break;
+
+                case "AnadirMazo":
+                    dos.writeUTF("AnadirMazo");
+                    DTOMazo nuevoMazo = new DTOMazo(nombreMazo,categoriaMazo,idUsuario);
+                    oos.writeObject(nuevoMazo);
                     oos.flush();
                     instruccionRealizada = ois.readBoolean();
                     SocketManager.getSocket().close();

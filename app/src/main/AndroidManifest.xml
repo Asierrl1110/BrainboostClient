@@ -15,13 +15,19 @@
         android:theme="@style/Theme.ClienteProyectoFinal"
         tools:targetApi="31">
         <activity
-            android:name=".MainActivity"
+            android:name="vista.MazoActivity"
             android:exported="false" />
         <activity
-            android:name=".SignActivity"
+            android:name=".ProfileActivity"
             android:exported="false" />
         <activity
-            android:name=".LoginActivity"
+            android:name="vista.MainActivity"
+            android:exported="false" />
+        <activity
+            android:name="vista.SignActivity"
+            android:exported="false" />
+        <activity
+            android:name="vista.LoginActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

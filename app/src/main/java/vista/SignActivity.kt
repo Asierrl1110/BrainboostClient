@@ -1,4 +1,4 @@
-package com.example.clienteproyectofinal
+package vista
 
 import android.os.Bundle
 import android.widget.Button
@@ -6,8 +6,8 @@ import android.widget.EditText
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
+import com.example.clienteproyectofinal.R
+import com.example.clienteproyectofinal.SocketConnection
 
 class SignActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -20,9 +20,9 @@ class SignActivity : AppCompatActivity() {
         val password = findViewById<EditText>(R.id.editTextTextPassword2)
 
         btnRegistrarse.setOnClickListener(){
-            val hilo = SocketEscritura("Registrarse")
-            hilo.setNombre(nombre)
-            hilo.setPassword(password)
+            val hilo = SocketConnection("Registrarse")
+            hilo.setNombreUsuario(nombre.text.toString())
+            hilo.setClaveUsuario(password.text.toString())
             hilo.start()
             hilo.join()
             if(hilo.isInstruccionRealizada){

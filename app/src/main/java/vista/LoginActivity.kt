@@ -1,4 +1,4 @@
-package com.example.clienteproyectofinal
+package vista
 
 import android.content.Intent
 import android.os.Bundle
@@ -7,9 +7,8 @@ import android.widget.EditText
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.app.ShareCompat.IntentBuilder
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
+import com.example.clienteproyectofinal.R
+import com.example.clienteproyectofinal.SocketConnection
 
 class LoginActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -23,19 +22,19 @@ class LoginActivity : AppCompatActivity() {
         val password = findViewById<EditText>(R.id.editTextTextPassword)
 
         btnRegistrarse.setOnClickListener(){
-            val intent = Intent(this,SignActivity::class.java)
+            val intent = Intent(this, SignActivity::class.java)
             this.startActivity(intent)
         }
 
         btnIniciarSesion.setOnClickListener(){
-            val hilo = SocketEscritura("IniciarSesion")
-            hilo.setNombre(nombre)
-            hilo.setPassword(password)
+            val hilo = SocketConnection("IniciarSesion")
+            hilo.setNombreUsuario(nombre.text.toString())
+            hilo.setClaveUsuario(password.text.toString())
             hilo.start()
             hilo.join()
             if(hilo.isInstruccionRealizada){
                 Toast.makeText(this,"Inicio de sesion correctamente",Toast.LENGTH_SHORT).show()
-                val intent = Intent(this,MainActivity::class.java)
+                val intent = Intent(this, MainActivity::class.java)
                 this.startActivity(intent)
             }else{
                 Toast.makeText(this,"Error, nombre de usuario o contraseña incorrectos", Toast.LENGTH_SHORT).show()
