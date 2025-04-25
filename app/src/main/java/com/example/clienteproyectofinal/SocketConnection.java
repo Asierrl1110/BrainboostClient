@@ -7,6 +7,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.util.List;
 
 import modelo.DTOMazo;
 import modelo.DTOUsuario;
@@ -48,18 +49,14 @@ public class SocketConnection extends Thread {
     }
 
     public void run(){
-        DataOutputStream dos;
-        DataInputStream dis;
         ObjectOutputStream oos;
         ObjectInputStream ois;
         try{
-            dos = new DataOutputStream(SocketManager.getSocket().getOutputStream());
-            dis = new DataInputStream(SocketManager.getSocket().getInputStream());
             oos = new ObjectOutputStream(SocketManager.getSocket().getOutputStream());
             ois = new ObjectInputStream(SocketManager.getSocket().getInputStream());
+            oos.writeUTF(caso);
             switch (caso){
                 case "Registrarse":
-                    dos.writeUTF("Registrarse");
                     DTOUsuario nuevoUsuario = new DTOUsuario(nombreUsuario,claveUsuario);
                     oos.writeObject(nuevoUsuario);
                     oos.flush();
@@ -68,7 +65,6 @@ public class SocketConnection extends Thread {
                     break;
 
                 case "IniciarSesion":
-                    dos.writeUTF("IniciarSesion");
                     DTOUsuario usuario = new DTOUsuario(nombreUsuario,claveUsuario);
                     oos.writeObject(usuario);
                     oos.flush();
@@ -81,15 +77,22 @@ public class SocketConnection extends Thread {
                     break;
 
                 case "AnadirMazo":
-                    dos.writeUTF("AnadirMazo");
                     DTOMazo nuevoMazo = new DTOMazo(nombreMazo,categoriaMazo,idUsuario);
                     oos.writeObject(nuevoMazo);
                     oos.flush();
                     instruccionRealizada = ois.readBoolean();
                     SocketManager.getSocket().close();
                     break;
+
+                case "Mazos":
+                    oos.writeInt(idUsuario);
+                    oos.flush();
+                    List<DTOMazo> mazos = (List<DTOMazo>) ois.readObject();
+                    ZonaCompartida.setMazos(mazos);
+                    SocketManager.getSocket().close();
+                    break;
             }
-        }catch (IOException ioException){
+        }catch (IOException | ClassNotFoundException ioException){
             ioException.printStackTrace();
         }
     }

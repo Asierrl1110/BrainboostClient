@@ -12,6 +12,12 @@ public class DTOMazo implements Serializable {
 
     private int idUsuario;
 
+    public DTOMazo(int id, String nombre, String categoria) {
+        this.id = id;
+        this.nombre = nombre;
+        this.categoria = categoria;
+    }
+
     public DTOMazo(int id, String nombre, String categoria, int idUsuario) {
         this.id = id;
         this.nombre = nombre;

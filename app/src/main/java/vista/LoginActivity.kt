@@ -9,6 +9,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import com.example.clienteproyectofinal.R
 import com.example.clienteproyectofinal.SocketConnection
+import com.example.clienteproyectofinal.ZonaCompartida
 
 class LoginActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
