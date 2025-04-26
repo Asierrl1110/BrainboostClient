@@ -40,6 +40,7 @@ class MainActivity : AppCompatActivity() {
         btnFlotante = findViewById<FloatingActionButton>(R.id.floatingActionButton)
         btnFlotante.setOnClickListener(){
             val intent = Intent(this, MazoActivity::class.java)
+            intent.putExtra("Caso","AnadirMazo")
             this.startActivity(intent)
         }
 
@@ -88,6 +89,12 @@ class MainActivity : AppCompatActivity() {
                     }
                 }
                 R.id.btnmodificarMazo ->{
+                    val intent = Intent(this, MazoActivity::class.java)
+                    intent.putExtra("Caso","ModificarMazo")
+                    intent.putExtra("Nombre",ZonaCompartida.getMazos()[position].nombre)
+                    intent.putExtra("Categoria",ZonaCompartida.getMazos()[position].categoria)
+                    intent.putExtra("IdMazo",ZonaCompartida.getMazos()[position].id)
+                    this.startActivity(intent)
                 }
                 R.id.btnanadirtarjeta ->{
                     val intent = Intent(this,TarjetaActivity::class.java)

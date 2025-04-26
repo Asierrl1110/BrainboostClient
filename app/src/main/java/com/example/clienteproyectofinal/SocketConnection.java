@@ -1,11 +1,5 @@
 package com.example.clienteproyectofinal;
 
-import android.util.Log;
-import android.widget.EditText;
-import android.widget.Toast;
-
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -18,39 +12,19 @@ import modelo.DTOUsuario;
 public class SocketConnection extends Thread {
 
     private String caso;
-    private String nombreUsuario;
-    private String claveUsuario;
-    private String nombreMazo;
-    private String categoriaMazo;
 
-    private int idUsuario, idMazo;
+    private int idUsuario;
+
+    private boolean instruccionRealizada;
 
     private DTOUsuario usuario;
 
-    private DTOMazo mazo;
+    private DTOMazo mazo, mazoAntiguo;
 
     private DTOTarjeta tarjeta;
 
     public void setIdUsuario(int idUsuario) {
         this.idUsuario = idUsuario;
-    }
-
-    private boolean instruccionRealizada;
-
-    public void setNombreUsuario(String nombreUsuario){
-        this.nombreUsuario=nombreUsuario;
-    }
-
-    public void setClaveUsuario(String claveUsuario) {
-        this.claveUsuario = claveUsuario;
-    }
-
-    public void setNombreMazo(String nombreMazo) {
-        this.nombreMazo = nombreMazo;
-    }
-
-    public void setCategoriaMazo(String categoriaMazo) {
-        this.categoriaMazo = categoriaMazo;
     }
 
     public boolean isInstruccionRealizada() {
@@ -69,6 +43,12 @@ public class SocketConnection extends Thread {
     public SocketConnection(String caso, DTOMazo mazo){
         this.caso=caso;
         this.mazo=mazo;
+    }
+
+    public SocketConnection(String caso, DTOMazo mazo, DTOMazo mazoAntiguo){
+        this.caso=caso;
+        this.mazo=mazo;
+        this.mazoAntiguo=mazoAntiguo;
     }
 
     public SocketConnection(String caso, DTOTarjeta tarjeta){
@@ -93,7 +73,6 @@ public class SocketConnection extends Thread {
                     break;
 
                 case "IniciarSesion":
-                    // usuario = new DTOUsuario(nombreUsuario,claveUsuario);
                     oos.writeObject(usuario);
                     oos.flush();
                     instruccionRealizada = ois.readBoolean();
@@ -105,8 +84,16 @@ public class SocketConnection extends Thread {
                     break;
 
                 case "AnadirMazo":
-                    DTOMazo nuevoMazo = new DTOMazo(nombreMazo,categoriaMazo,idUsuario);
-                    oos.writeObject(nuevoMazo);
+                    oos.writeObject(mazo);
+                    oos.flush();
+                    instruccionRealizada = ois.readBoolean();
+                    SocketManager.getSocket().close();
+                    break;
+
+                case "ModificarMazo":
+                    oos.writeObject(mazo);
+                    oos.flush();
+                    oos.writeObject(mazoAntiguo);
                     oos.flush();
                     instruccionRealizada = ois.readBoolean();
                     SocketManager.getSocket().close();
@@ -126,6 +113,7 @@ public class SocketConnection extends Thread {
                     ZonaCompartida.setMazos(mazos);
                     SocketManager.getSocket().close();
                     break;
+
                 case "AnadirTarjeta":
                     oos.writeObject(tarjeta);
                     oos.flush();

@@ -13,7 +13,6 @@ public class DTOMazo implements Serializable {
     private int idUsuario;
 
     public DTOMazo(String nombre, String categoria) {
-        super();
         this.nombre = nombre;
         this.categoria = categoria;
     }
