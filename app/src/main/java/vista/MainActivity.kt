@@ -38,7 +38,6 @@ class MainActivity : AppCompatActivity() {
         btnFlotante = findViewById<FloatingActionButton>(R.id.floatingActionButton)
         btnFlotante.setOnClickListener(){
             val intent = Intent(this, MazoActivity::class.java)
-            intent.putExtra("Caso","Anadir")
             this.startActivity(intent)
         }
 
