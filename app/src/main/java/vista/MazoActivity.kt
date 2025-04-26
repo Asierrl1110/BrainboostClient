@@ -11,12 +11,16 @@ import androidx.appcompat.app.AppCompatActivity
 import com.example.clienteproyectofinal.R
 import com.example.clienteproyectofinal.SocketConnection
 import com.example.clienteproyectofinal.ZonaCompartida
+import modelo.DTOMazo
 
 class MazoActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContentView(R.layout.activity_mazo)
+
+        val caso = intent.getStringExtra("Caso")
+
         val btnAnadirMazo = findViewById<Button>(R.id.btnanadirmazo)
         val nombreMazo = findViewById<EditText>(R.id.editTextNombreMazo)
 
@@ -26,17 +30,19 @@ class MazoActivity : AppCompatActivity() {
         spinner.adapter = adaptador
 
         btnAnadirMazo.setOnClickListener(){
-            val hilo = SocketConnection("AnadirMazo")
-            hilo.setNombreMazo(nombreMazo.text.toString())
-            hilo.setCategoriaMazo(spinner.selectedItem.toString())
-            hilo.setIdUsuario(Integer.parseInt(ZonaCompartida.getUsuarioRegistrado().id.toString()))
-            hilo.start()
-            hilo.join()
-            if(hilo.isInstruccionRealizada){
-                Toast.makeText(this,"Mazo creado correctamente",Toast.LENGTH_SHORT).show()
-                finish()
-            }else{
-                Toast.makeText(this,"Error, no se pudo añadir el mazo",Toast.LENGTH_SHORT).show()
+            if(caso.equals("Anadir")){
+                val mazo = DTOMazo(nombreMazo.text.toString(),spinner.selectedItem.toString(),ZonaCompartida.getUsuarioRegistrado().id)
+                val hilo = SocketConnection("AnadirMazo",mazo)
+                hilo.start()
+                hilo.join()
+                if(hilo.isInstruccionRealizada){
+                    Toast.makeText(this,"Mazo creado correctamente",Toast.LENGTH_SHORT).show()
+                    finish()
+                }else{
+                    Toast.makeText(this,"Error, no se pudo añadir el mazo",Toast.LENGTH_SHORT).show()
+                }
+            }else if(caso.equals("Modificar")){
+
             }
         }
 
