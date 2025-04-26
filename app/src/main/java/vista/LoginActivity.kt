@@ -10,6 +10,7 @@ import androidx.appcompat.app.AppCompatActivity
 import com.example.clienteproyectofinal.R
 import com.example.clienteproyectofinal.SocketConnection
 import com.example.clienteproyectofinal.ZonaCompartida
+import modelo.DTOUsuario
 
 class LoginActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -28,13 +29,13 @@ class LoginActivity : AppCompatActivity() {
         }
 
         btnIniciarSesion.setOnClickListener(){
-            val hilo = SocketConnection("IniciarSesion")
-            hilo.setNombreUsuario(nombre.text.toString())
-            hilo.setClaveUsuario(password.text.toString())
+            val usuario = DTOUsuario(nombre.text.toString(),password.text.toString())
+            val hilo = SocketConnection("IniciarSesion",usuario)
             hilo.start()
             hilo.join()
             if(hilo.isInstruccionRealizada){
                 Toast.makeText(this,"Inicio de sesion correctamente",Toast.LENGTH_SHORT).show()
+                Toast.makeText(this,ZonaCompartida.getUsuarioRegistrado().id.toString() + " " + ZonaCompartida.getUsuarioRegistrado().nombre + " " + ZonaCompartida.getUsuarioRegistrado().clave,Toast.LENGTH_SHORT).show()
                 val intent = Intent(this, MainActivity::class.java)
                 this.startActivity(intent)
             }else{

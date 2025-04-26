@@ -1,6 +1,8 @@
 package com.example.clienteproyectofinal;
 
+import android.util.Log;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -15,7 +17,11 @@ import modelo.DTOUsuario;
 
 public class SocketConnection extends Thread {
 
-    private String caso, nombreMazo, categoriaMazo;
+    private String caso;
+    private String nombreUsuario;
+    private String claveUsuario;
+    private String nombreMazo;
+    private String categoriaMazo;
 
     private int idUsuario, idMazo;
 
@@ -30,6 +36,14 @@ public class SocketConnection extends Thread {
     }
 
     private boolean instruccionRealizada;
+
+    public void setNombreUsuario(String nombreUsuario){
+        this.nombreUsuario=nombreUsuario;
+    }
+
+    public void setClaveUsuario(String claveUsuario) {
+        this.claveUsuario = claveUsuario;
+    }
 
     public void setNombreMazo(String nombreMazo) {
         this.nombreMazo = nombreMazo;
@@ -79,6 +93,7 @@ public class SocketConnection extends Thread {
                     break;
 
                 case "IniciarSesion":
+                    // usuario = new DTOUsuario(nombreUsuario,claveUsuario);
                     oos.writeObject(usuario);
                     oos.flush();
                     instruccionRealizada = ois.readBoolean();

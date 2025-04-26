@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.Menu
 import android.view.View
 import android.widget.ListView
+import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.PopupMenu
@@ -31,6 +32,7 @@ class MainActivity : AppCompatActivity() {
         enableEdgeToEdge()
         setContentView(R.layout.activity_main)
         cargarMazos()
+
 
         tbMenu = findViewById<Toolbar>(R.id.toolbar)
         setSupportActionBar(tbMenu)
@@ -69,5 +71,32 @@ class MainActivity : AppCompatActivity() {
         val menuPopup = PopupMenu(this,view)
         menuPopup.menuInflater.inflate(R.menu.menu_popup_mazo,menuPopup.menu)
         menuPopup.show()
+
+        menuPopup.setOnMenuItemClickListener { menuItem ->
+            when(menuItem.itemId){
+                R.id.btnborrarMazo ->{
+                    val mazo = ZonaCompartida.getMazos()[position]
+                    mazo.idUsuario = ZonaCompartida.getUsuarioRegistrado().id
+                    val hilo = SocketConnection("BorrarMazo",mazo)
+                    hilo.start()
+                    hilo.join()
+                    if(hilo.isInstruccionRealizada){
+                        Toast.makeText(this,"Mazo eliminado correctamente", Toast.LENGTH_SHORT).show()
+                        // actualizarMazos()
+                    }else{
+                        Toast.makeText(this,"Error, no se pudo eliminar el mazo",Toast.LENGTH_SHORT).show()
+                    }
+                }
+                R.id.btnmodificarMazo ->{
+                }
+                R.id.btnanadirtarjeta ->{
+                    val intent = Intent(this,TarjetaActivity::class.java)
+                    val mazo = ZonaCompartida.getMazos()[position]
+                    intent.putExtra("IdMazo",mazo.id)
+                    this.startActivity(intent)
+                }
+            }
+            true
+        }
     }
 }
