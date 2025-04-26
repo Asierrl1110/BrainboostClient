@@ -5,7 +5,6 @@ import android.os.Bundle
 import android.view.Menu
 import android.view.View
 import android.widget.ListView
-import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.PopupMenu
@@ -31,12 +30,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContentView(R.layout.activity_main)
-
         cargarMazos()
-
-        lvMazos = findViewById<ListView>(R.id.lvMazos)
-        adapter = AdaptadorMazo(this,ZonaCompartida.getMazos())
-        lvMazos.adapter = adapter
 
         tbMenu = findViewById<Toolbar>(R.id.toolbar)
         setSupportActionBar(tbMenu)
@@ -65,46 +59,16 @@ class MainActivity : AppCompatActivity() {
         hilo.setIdUsuario(ZonaCompartida.getUsuarioRegistrado().id)
         hilo.start()
         hilo.join()
-    }
-
-    fun actualizarMazos(){
-        val hilo = SocketConnection("Mazos")
-        hilo.setIdUsuario(ZonaCompartida.getUsuarioRegistrado().id)
-        hilo.start()
-        hilo.join()
-        adapter.notifyDataSetChanged()
+        lvMazos = findViewById<ListView>(R.id.lvMazos)
+        // val lista : MutableList<DTOMazo> = mutableListOf()
+        // lista.add(DTOMazo(1,"Nombre","Categoria"))
+        adapter = AdaptadorMazo(this,ZonaCompartida.getMazos())
+        lvMazos.adapter = adapter
     }
 
     private fun showPopupMenu(view : View, position : Int){
         val menuPopup = PopupMenu(this,view)
         menuPopup.menuInflater.inflate(R.menu.menu_popup_mazo,menuPopup.menu)
         menuPopup.show()
-
-        menuPopup.setOnMenuItemClickListener { menuItem ->
-            when(menuItem.itemId){
-                R.id.btnborrarMazo ->{
-                    val mazo = ZonaCompartida.getMazos()[position]
-                    mazo.idUsuario = ZonaCompartida.getUsuarioRegistrado().id
-                    val hilo = SocketConnection("BorrarMazo",mazo)
-                    hilo.start()
-                    hilo.join()
-                    if(hilo.isInstruccionRealizada){
-                        Toast.makeText(this,"Mazo eliminado correctamente",Toast.LENGTH_SHORT).show()
-                        actualizarMazos()
-                    }else{
-                        Toast.makeText(this,"Error, no se pudo eliminar el mazo",Toast.LENGTH_SHORT).show()
-                    }
-                }
-                R.id.btnmodificarMazo ->{
-                }
-                R.id.btnanadirtarjeta ->{
-                    val intent = Intent(this,TarjetaActivity::class.java)
-                    val mazo = ZonaCompartida.getMazos()[position]
-                    intent.putExtra("IdMazo",mazo.id)
-                    this.startActivity(intent)
-                }
-            }
-            true
-        }
     }
 }

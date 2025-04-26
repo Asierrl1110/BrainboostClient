@@ -8,7 +8,6 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import com.example.clienteproyectofinal.R
 import com.example.clienteproyectofinal.SocketConnection
-import modelo.DTOUsuario
 
 class SignActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -21,8 +20,9 @@ class SignActivity : AppCompatActivity() {
         val password = findViewById<EditText>(R.id.editTextTextPassword2)
 
         btnRegistrarse.setOnClickListener(){
-            val usuario = DTOUsuario(nombre.text.toString(),password.text.toString());
-            val hilo = SocketConnection("Registrarse",usuario)
+            val hilo = SocketConnection("Registrarse")
+            hilo.setNombreUsuario(nombre.text.toString())
+            hilo.setClaveUsuario(password.text.toString())
             hilo.start()
             hilo.join()
             if(hilo.isInstruccionRealizada){

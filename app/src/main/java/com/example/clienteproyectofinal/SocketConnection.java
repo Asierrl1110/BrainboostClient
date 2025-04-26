@@ -15,7 +15,7 @@ import modelo.DTOUsuario;
 
 public class SocketConnection extends Thread {
 
-    private String caso;
+    private String caso, nombreMazo, categoriaMazo;
 
     private int idUsuario, idMazo;
 
@@ -30,6 +30,14 @@ public class SocketConnection extends Thread {
     }
 
     private boolean instruccionRealizada;
+
+    public void setNombreMazo(String nombreMazo) {
+        this.nombreMazo = nombreMazo;
+    }
+
+    public void setCategoriaMazo(String categoriaMazo) {
+        this.categoriaMazo = categoriaMazo;
+    }
 
     public boolean isInstruccionRealizada() {
         return instruccionRealizada;
@@ -82,14 +90,11 @@ public class SocketConnection extends Thread {
                     break;
 
                 case "AnadirMazo":
-                    oos.writeObject(mazo);
+                    DTOMazo nuevoMazo = new DTOMazo(nombreMazo,categoriaMazo,idUsuario);
+                    oos.writeObject(nuevoMazo);
                     oos.flush();
                     instruccionRealizada = ois.readBoolean();
                     SocketManager.getSocket().close();
-                    break;
-
-                case "ModificarMazo":
-
                     break;
 
                 case "BorrarMazo":
