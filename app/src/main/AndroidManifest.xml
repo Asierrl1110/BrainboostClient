@@ -15,6 +15,9 @@
         android:theme="@style/Theme.ClienteProyectoFinal"
         tools:targetApi="31">
         <activity
+            android:name="vista.TarjetasActivity"
+            android:exported="false" />
+        <activity
             android:name="vista.TarjetaActivity"
             android:exported="false" />
         <activity

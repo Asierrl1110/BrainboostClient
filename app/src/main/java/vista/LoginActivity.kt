@@ -35,7 +35,6 @@ class LoginActivity : AppCompatActivity() {
             hilo.join()
             if(hilo.isInstruccionRealizada){
                 Toast.makeText(this,"Inicio de sesion correctamente",Toast.LENGTH_SHORT).show()
-                Toast.makeText(this,ZonaCompartida.getUsuarioRegistrado().id.toString() + " " + ZonaCompartida.getUsuarioRegistrado().nombre + " " + ZonaCompartida.getUsuarioRegistrado().clave,Toast.LENGTH_SHORT).show()
                 val intent = Intent(this, MainActivity::class.java)
                 this.startActivity(intent)
             }else{

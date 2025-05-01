@@ -120,6 +120,13 @@ public class SocketConnection extends Thread {
                     instruccionRealizada = ois.readBoolean();
                     SocketManager.getSocket().close();
                     break;
+                case "TarjetasPorUsuario":
+                    oos.writeInt(idUsuario);
+                    oos.flush();
+                    List<DTOTarjeta> tarjetas = (List<DTOTarjeta>) ois.readObject();
+                    ZonaCompartida.setTarjetas(tarjetas);
+                    SocketManager.getSocket().close();
+                    break;
             }
         }catch (IOException | ClassNotFoundException ioException){
             ioException.printStackTrace();

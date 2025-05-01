@@ -3,6 +3,7 @@ package vista
 import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
+import android.view.MenuItem
 import android.view.View
 import android.widget.ListView
 import android.widget.Toast
@@ -49,6 +50,19 @@ class MainActivity : AppCompatActivity() {
             true
         }
 
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when(item.itemId){
+            R.id.menuSalir ->{
+                finishAffinity()
+            }
+            R.id.menuTarjetas ->{
+                val intent = Intent(this, TarjetasActivity::class.java)
+                startActivity(intent)
+            }
+        }
+        return super.onOptionsItemSelected(item)
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {

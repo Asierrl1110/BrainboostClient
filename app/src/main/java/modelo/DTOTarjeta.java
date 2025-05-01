@@ -12,6 +12,21 @@ public class DTOTarjeta implements Serializable {
 
     private int idMazo;
 
+    private String nombreMazo;
+
+    public DTOTarjeta(int id, String pregunta, String respuesta, int idMazo, String nombreMazo) {
+        this.id = id;
+        this.pregunta = pregunta;
+        this.respuesta = respuesta;
+        this.idMazo = idMazo;
+        this.nombreMazo = nombreMazo;
+    }
+
+    public DTOTarjeta(String pregunta, String respuesta) {
+        this.pregunta = pregunta;
+        this.respuesta = respuesta;
+    }
+
     public DTOTarjeta(int id, String pregunta, String respuesta, int idMazo) {
         this.id = id;
         this.pregunta = pregunta;
@@ -57,6 +72,13 @@ public class DTOTarjeta implements Serializable {
         this.idMazo = idMazo;
     }
 
+    public String getNombreMazo() {
+        return nombreMazo;
+    }
+
+    public void setNombreMazo(String nombreMazo) {
+        this.nombreMazo = nombreMazo;
+    }
 
 
 }
