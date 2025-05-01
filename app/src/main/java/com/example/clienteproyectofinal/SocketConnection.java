@@ -21,7 +21,7 @@ public class SocketConnection extends Thread {
 
     private DTOMazo mazo, mazoAntiguo;
 
-    private DTOTarjeta tarjeta;
+    private DTOTarjeta tarjeta, tarjetaAntigua;
 
     public void setIdUsuario(int idUsuario) {
         this.idUsuario = idUsuario;
@@ -49,6 +49,12 @@ public class SocketConnection extends Thread {
         this.caso=caso;
         this.mazo=mazo;
         this.mazoAntiguo=mazoAntiguo;
+    }
+
+    public SocketConnection(String caso, DTOTarjeta tarjeta, DTOTarjeta tarjetaAntigua) {
+        this.caso = caso;
+        this.tarjeta = tarjeta;
+        this.tarjetaAntigua = tarjetaAntigua;
     }
 
     public SocketConnection(String caso, DTOTarjeta tarjeta){
@@ -115,6 +121,20 @@ public class SocketConnection extends Thread {
                     break;
 
                 case "AnadirTarjeta":
+                    oos.writeObject(tarjeta);
+                    oos.flush();
+                    instruccionRealizada = ois.readBoolean();
+                    SocketManager.getSocket().close();
+                    break;
+                case "ModificarTarjeta":
+                    oos.writeObject(tarjeta);
+                    oos.flush();
+                    oos.writeObject(tarjetaAntigua);
+                    oos.flush();
+                    instruccionRealizada = ois.readBoolean();
+                    SocketManager.getSocket().close();
+                    break;
+                case "BorrarTarjeta":
                     oos.writeObject(tarjeta);
                     oos.flush();
                     instruccionRealizada = ois.readBoolean();

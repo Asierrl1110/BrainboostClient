@@ -1,10 +1,14 @@
 package vista
 
+import android.content.Intent
 import android.os.Bundle
+import android.view.View
 import android.widget.Button
 import android.widget.ListView
+import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.PopupMenu
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.example.clienteproyectofinal.AdaptadorMazo
@@ -32,6 +36,45 @@ class TarjetasActivity : AppCompatActivity() {
         btnVolver.setOnClickListener(){
             finish()
         }
+
+        lvTarjetas.setOnItemClickListener { parent, view, position, id ->
+            val intent = Intent(this,TarjetaActivity::class.java)
+            val tarjeta = ZonaCompartida.getTarjetas()[position]
+            intent.putExtra("Caso","ModificarTarjeta")
+            intent.putExtra("IdTarjeta",tarjeta.id)
+            intent.putExtra("Pregunta",tarjeta.pregunta)
+            intent.putExtra("Respuesta",tarjeta.respuesta)
+            intent.putExtra("IdMazo",tarjeta.idMazo)
+            startActivity(intent)
+        }
+
+        lvTarjetas.setOnItemLongClickListener { parent, view, position, id ->
+            showPopupMenu(view,position)
+            true
+        }
+    }
+
+    private fun showPopupMenu(view : View, position : Int){
+        val menuPopup = PopupMenu(this,view)
+        menuPopup.menuInflater.inflate(R.menu.menu_popup_tarjeta,menuPopup.menu)
+        menuPopup.show()
+
+        menuPopup.setOnMenuItemClickListener { menuItem ->
+            when(menuItem.itemId){
+                R.id.menuBorrarTarjeta ->{
+                    val tarjeta = ZonaCompartida.getTarjetas()[position]
+                    val hilo = SocketConnection("BorrarTarjeta",tarjeta)
+                    hilo.start()
+                    hilo.join()
+                    if(hilo.isInstruccionRealizada){
+                        Toast.makeText(this,"Tarjeta eliminada correctamente",Toast.LENGTH_SHORT).show()
+                    }else{
+                        Toast.makeText(this,"Error, no se pudo eliminar la tarjeta",Toast.LENGTH_SHORT).show()
+                    }
+                }
+            }
+            true
+        }
     }
 
     fun cargarTarjetas(){
@@ -40,8 +83,6 @@ class TarjetasActivity : AppCompatActivity() {
         hilo.start()
         hilo.join()
         lvTarjetas = findViewById<ListView>(R.id.lvTarjetas)
-        // val lista : MutableList<DTOMazo> = mutableListOf()
-        // lista.add(DTOMazo(1,"Nombre","Categoria"))
         adapter = AdaptadorTarjeta(this, ZonaCompartida.getTarjetas())
         lvTarjetas.adapter = adapter
     }

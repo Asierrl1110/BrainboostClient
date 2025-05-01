@@ -33,7 +33,7 @@ class MazoActivity : AppCompatActivity() {
         spinner.adapter = adaptador
 
         if(caso.equals("ModificarMazo")){
-            nombreMazo.setText(intent.getStringExtra("Nombre"))
+            nombreMazo.setText(nombre)
             spinner.setSelection(categorias.indexOf(categoria))
         }
 
@@ -41,9 +41,6 @@ class MazoActivity : AppCompatActivity() {
             if(caso.equals("AnadirMazo")){
                 val mazo = DTOMazo(nombreMazo.text.toString(),spinner.selectedItem.toString(),ZonaCompartida.getUsuarioRegistrado().id)
                 val hilo = SocketConnection("AnadirMazo",mazo)
-                // hilo.setNombreMazo(nombreMazo.text.toString())
-                // hilo.setCategoriaMazo(spinner.selectedItem.toString())
-                // hilo.setIdUsuario(Integer.parseInt(ZonaCompartida.getUsuarioRegistrado().id.toString()))
                 hilo.start()
                 hilo.join()
                 if(hilo.isInstruccionRealizada){

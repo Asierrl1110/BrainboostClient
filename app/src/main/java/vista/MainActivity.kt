@@ -113,6 +113,7 @@ class MainActivity : AppCompatActivity() {
                 R.id.btnanadirtarjeta ->{
                     val intent = Intent(this,TarjetaActivity::class.java)
                     val mazo = ZonaCompartida.getMazos()[position]
+                    intent.putExtra("Caso","AnadirTarjeta")
                     intent.putExtra("IdMazo",mazo.id)
                     this.startActivity(intent)
                 }
