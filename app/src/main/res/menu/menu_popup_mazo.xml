@@ -2,10 +2,12 @@
 <menu xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <item android:id="@+id/btnborrarMazo"
+    <item android:id="@+id/menuExportarMazo"
+        android:title="Exportar" />
+    <item android:id="@+id/menuBorrarMazo"
         android:title="Borrar" />
-    <item android:id="@+id/btnmodificarMazo"
+    <item android:id="@+id/menuModificarMazo"
         android:title="Modificar" />
-    <item android:id="@+id/btnanadirtarjeta"
+    <item android:id="@+id/menuAnadirTarjeta"
         android:title="Añadir tarjeta" />
 </menu>

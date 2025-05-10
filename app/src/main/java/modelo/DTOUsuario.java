@@ -24,7 +24,6 @@ public class DTOUsuario implements Serializable {
     }
 
     public DTOUsuario(String nombre, String clave, String nuevaClave) {
-        super();
         this.nombre = nombre;
         this.clave = clave;
         this.nuevaClave = nuevaClave;

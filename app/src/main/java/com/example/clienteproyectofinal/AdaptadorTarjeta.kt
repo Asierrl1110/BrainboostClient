@@ -6,7 +6,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.BaseAdapter
 import android.widget.TextView
-import modelo.DTOMazo
 import modelo.DTOTarjeta
 
 class AdaptadorTarjeta(private val context : Context, private val lista : MutableList<DTOTarjeta>) : BaseAdapter() {

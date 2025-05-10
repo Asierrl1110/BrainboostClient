@@ -9,11 +9,17 @@ import modelo.DTOMazo;
 import modelo.DTOTarjeta;
 import modelo.DTOUsuario;
 
+/**
+ * Clase que controla las conexiones de la aplicación con el servidor
+ */
 public class SocketConnection extends Thread {
 
-    private String caso;
+    // Vairiable que almaena que instrucciones quiere realizar el cliente en la conexión con el servidor
+    private final String caso;
 
     private int idUsuario;
+
+    private int idMazo;
 
     private boolean instruccionRealizada;
 
@@ -25,6 +31,14 @@ public class SocketConnection extends Thread {
 
     public void setIdUsuario(int idUsuario) {
         this.idUsuario = idUsuario;
+    }
+
+    public void setIdMazo(int idMazo){
+        this.idMazo = idMazo;
+    }
+
+    public int getIdMazo(){
+        return idMazo;
     }
 
     public boolean isInstruccionRealizada() {
@@ -63,13 +77,16 @@ public class SocketConnection extends Thread {
     }
 
     public void run(){
+        // Objetos pra enviar y recibir información con el servidor
         ObjectOutputStream oos;
         ObjectInputStream ois;
         try{
             oos = new ObjectOutputStream(SocketManager.getSocket().getOutputStream());
             ois = new ObjectInputStream(SocketManager.getSocket().getInputStream());
+            // Escribimos el caso/instrucción de lo que queremos hacer en la conexión con el servidor
             oos.writeUTF(caso);
             oos.flush();
+            // En función de la instrucción realizaremos una serie de instrucciones o no
             switch (caso){
                 case "Registrarse":
                     oos.writeObject(usuario);
@@ -86,6 +103,19 @@ public class SocketConnection extends Thread {
                         usuario.setId(ois.readInt());
                         ZonaCompartida.setUsuarioRegistrado(usuario);
                     }
+                    SocketManager.getSocket().close();
+                    break;
+
+                case "BorrarUsuario":
+                    oos.writeObject(usuario);
+                    oos.flush();
+                    instruccionRealizada = ois.readBoolean();
+                    SocketManager.getSocket().close();
+                    break;
+                case "CambiarClave":
+                    oos.writeObject(usuario);
+                    oos.flush();
+                    instruccionRealizada = ois.readBoolean();
                     SocketManager.getSocket().close();
                     break;
 
@@ -119,6 +149,12 @@ public class SocketConnection extends Thread {
                     ZonaCompartida.setMazos(mazos);
                     SocketManager.getSocket().close();
                     break;
+                case "IdMazo":
+                    oos.writeObject(mazo);
+                    oos.flush();
+                    idMazo = ois.readInt();
+                    SocketManager.getSocket().close();
+                    break;
 
                 case "AnadirTarjeta":
                     oos.writeObject(tarjeta);
@@ -145,6 +181,13 @@ public class SocketConnection extends Thread {
                     oos.flush();
                     List<DTOTarjeta> tarjetas = (List<DTOTarjeta>) ois.readObject();
                     ZonaCompartida.setTarjetas(tarjetas);
+                    SocketManager.getSocket().close();
+                    break;
+                case "TarjetasPorMazo":
+                    oos.writeInt(idMazo);
+                    oos.flush();
+                    List<DTOTarjeta> tarjetasMazo = (List<DTOTarjeta>) ois.readObject();
+                    ZonaCompartida.setTarjetas(tarjetasMazo);
                     SocketManager.getSocket().close();
                     break;
             }

@@ -9,7 +9,7 @@
         app:showAsAction="always"
         app:actionViewClass="android.widget.SearchView" />
     <item
-        android:id="@+id/menu1"
+        android:id="@+id/menuPerfil"
         android:icon="@drawable/person_20dp"
         android:title="Item"
         app:showAsAction="always"/>

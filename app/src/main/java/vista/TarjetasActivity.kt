@@ -29,6 +29,8 @@ class TarjetasActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContentView(R.layout.activity_tarjetas)
+        ZonaCompartida.addActivity(this)
+
         cargarTarjetas()
 
         btnVolver = findViewById<Button>(R.id.btnVolverTarjetas)
@@ -85,5 +87,10 @@ class TarjetasActivity : AppCompatActivity() {
         lvTarjetas = findViewById<ListView>(R.id.lvTarjetas)
         adapter = AdaptadorTarjeta(this, ZonaCompartida.getTarjetas())
         lvTarjetas.adapter = adapter
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        ZonaCompartida.eliminarActivity(this)
     }
 }
