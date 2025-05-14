@@ -12,6 +12,7 @@ import modelo.DTOUsuario;
  */
 public class ZonaCompartida {
 
+    private static boolean isOnline = false;
     // Variable que almacena los usuarios del usuario que esta con la sesión iniciada
     private static DTOUsuario usuarioRegistrado;
 
@@ -20,6 +21,9 @@ public class ZonaCompartida {
 
     // Variable que almacena una lista de las tarjetas del usuario
     private static List<DTOTarjeta> tarjetas = new ArrayList<DTOTarjeta>();
+
+    // Lista que almacena las tarjetas de una sesion de estudio
+    private static List<DTOTarjeta> tarjetasEstudio = new ArrayList<DTOTarjeta>();
 
     // Variable que almacena una lista de las activities que se han ejecutado
     private static List<Activity> activities = new ArrayList<Activity>();
@@ -36,6 +40,14 @@ public class ZonaCompartida {
         ZonaCompartida.tarjetas = tarjetas;
     }
 
+    public static void setTarjetasEstudio(List<DTOTarjeta> tarjetas){
+        ZonaCompartida.tarjetasEstudio = tarjetas;
+    }
+
+    public static void setIsOnline(boolean isOnline){
+        ZonaCompartida.isOnline = isOnline;
+    }
+
     public static DTOUsuario getUsuarioRegistrado() {
         return usuarioRegistrado;
     }
@@ -46,6 +58,14 @@ public class ZonaCompartida {
 
     public static List<DTOTarjeta> getTarjetas(){
         return tarjetas;
+    }
+
+     public static List<DTOTarjeta> getTarjetasEstudio(){
+        return tarjetasEstudio;
+    }
+
+    public static boolean isIsOnline(){
+        return isOnline;
     }
 
     public static void addActivity(Activity activity) {

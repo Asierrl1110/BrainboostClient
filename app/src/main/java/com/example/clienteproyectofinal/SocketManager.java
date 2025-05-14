@@ -16,10 +16,16 @@ public class SocketManager {
             int port = 2000;
             try {
                 socket = new Socket(ip,port);
+                ZonaCompartida.setIsOnline(true);
             } catch (IOException e) {
+                ZonaCompartida.setIsOnline(false);
                 throw new RuntimeException(e);
             }
         }
         return socket;
+    }
+
+    public static boolean isConnected() {
+        return socket != null && socket.isConnected() && !socket.isClosed();
     }
 }

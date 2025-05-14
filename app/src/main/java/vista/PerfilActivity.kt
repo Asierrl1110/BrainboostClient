@@ -11,6 +11,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import com.example.clienteproyectofinal.DAOUsuario
 import com.example.clienteproyectofinal.R
 import com.example.clienteproyectofinal.SocketConnection
 import com.example.clienteproyectofinal.ZonaCompartida
@@ -45,6 +46,11 @@ class PerfilActivity : AppCompatActivity() {
                     hilo.join()
                     if(hilo.isInstruccionRealizada){
                         Toast.makeText(this,"Contraseña cambiada correctamente",Toast.LENGTH_SHORT).show()
+                        ZonaCompartida.getUsuarioRegistrado().clave = claveNueva.text.toString()
+                        val daoUsuario = DAOUsuario(this)
+                        daoUsuario.changePassword(claveNueva.text.toString(),
+                            DTOUsuario(ZonaCompartida.getUsuarioRegistrado().id,ZonaCompartida.getUsuarioRegistrado().nombre,claveAntigua.text.toString())
+                        )
                     }else{
                         Toast.makeText(this,"Error al cambiar la contraseña",Toast.LENGTH_SHORT).show()
                     }
@@ -65,6 +71,8 @@ class PerfilActivity : AppCompatActivity() {
             hilo.join()
             if(hilo.isInstruccionRealizada){
                 Toast.makeText(this,"Usuario eliminado correctamente",Toast.LENGTH_SHORT).show()
+                val daoUsuario = DAOUsuario(this)
+                daoUsuario.deleteUser(ZonaCompartida.getUsuarioRegistrado())
                 ZonaCompartida.cerrarSesion()
             }else{
                 Toast.makeText(this,"Error, no se pudo eliminar el perfil",Toast.LENGTH_SHORT).show()

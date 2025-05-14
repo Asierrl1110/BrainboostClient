@@ -20,6 +20,9 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.PopupMenu
 import androidx.appcompat.widget.Toolbar
 import com.example.clienteproyectofinal.AdaptadorMazo
+import com.example.clienteproyectofinal.AdaptadorTarjeta
+import com.example.clienteproyectofinal.DAOMazo
+import com.example.clienteproyectofinal.DAOTarjeta
 import com.example.clienteproyectofinal.R
 import com.example.clienteproyectofinal.SocketConnection
 import com.example.clienteproyectofinal.ZonaCompartida
@@ -47,7 +50,9 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         ZonaCompartida.addActivity(this)
 
-        cargarMazos()
+        lvMazos = findViewById<ListView>(R.id.lvMazos)
+        adapter = AdaptadorMazo(this,ZonaCompartida.getMazos())
+        lvMazos.adapter = adapter
 
 
         tbMenu = findViewById<Toolbar>(R.id.toolbar)
@@ -65,6 +70,20 @@ class MainActivity : AppCompatActivity() {
             true
         }
 
+        lvMazos.setOnItemClickListener { parent, view, position, id ->
+            val mazoSeleccionado = ZonaCompartida.getMazos()[position]
+            val listaTarjetas = ZonaCompartida.getTarjetas().filter { it.idMazo == mazoSeleccionado.id }
+            if(listaTarjetas.isNotEmpty()){
+                ZonaCompartida.setTarjetasEstudio(listaTarjetas)
+                val intent = Intent(this,EstudioActivity::class.java)
+                this.startActivity(intent)
+            }else{
+                Toast.makeText(this,"Este mazo no tiene tarjetas",Toast.LENGTH_SHORT).show()
+            }
+        }
+
+
+
         resultLauncher = registerForActivityResult(
             ActivityResultContracts.StartActivityForResult()) { result ->
             if(result.resultCode == Activity.RESULT_OK){
@@ -78,15 +97,15 @@ class MainActivity : AppCompatActivity() {
     private fun csvToMazo(uri : Uri){
         contentResolver.openInputStream(uri)?.use { inputStream ->
             BufferedReader(InputStreamReader(inputStream)).use{ reader ->
-                var line = reader.readLine()
                 var valores : List<String>  = ArrayList<String>()
+                var line = reader.readLine()
                 if(line != null){
                     valores = line.toString().split(";")
                     val mazo = DTOMazo(valores.get(0),valores.get(1),ZonaCompartida.getUsuarioRegistrado().id)
                     val hilo = SocketConnection("AnadirMazo",mazo)
                     hilo.start()
                     hilo.join()
-                    val nuevohilo = SocketConnection("IdMazo",mazo)
+                    val nuevohilo = SocketConnection("IdMazo")
                     nuevohilo.start()
                     nuevohilo.join()
                     mazo.id = nuevohilo.idMazo
@@ -106,9 +125,11 @@ class MainActivity : AppCompatActivity() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when(item.itemId){
-            R.id.menuSalir ->{
-                // finishAffinity()
+            R.id.menuImportar ->{
                 leerCSV()
+            }
+            R.id.menuSalir ->{
+                finishAffinity()
             }
             R.id.menuPerfil ->{
                 val intent = Intent(this,PerfilActivity::class.java)
@@ -128,16 +149,31 @@ class MainActivity : AppCompatActivity() {
     }
 
     /**
-     * Método que carga los mazos del usuario en la list view de la activity
+     * Método que carga los mazos del usuario
      */
     private fun cargarMazos(){
         val hilo = SocketConnection("Mazos")
         hilo.setIdUsuario(ZonaCompartida.getUsuarioRegistrado().id)
         hilo.start()
         hilo.join()
-        lvMazos = findViewById<ListView>(R.id.lvMazos)
         adapter = AdaptadorMazo(this,ZonaCompartida.getMazos())
         lvMazos.adapter = adapter
+        val daoMazo = DAOMazo(this)
+        daoMazo.deleteMazos(ZonaCompartida.getUsuarioRegistrado().id)
+        daoMazo.addMazos(ZonaCompartida.getMazos(),ZonaCompartida.getUsuarioRegistrado().id)
+    }
+
+    /**
+     * Método que carga las tarjetas del usuario
+     */
+    private fun cargarTarjetas(){
+        val hilo = SocketConnection("TarjetasPorUsuario")
+        hilo.setIdUsuario(ZonaCompartida.getUsuarioRegistrado().id)
+        hilo.start()
+        hilo.join()
+        val daoTarjeta = DAOTarjeta(this)
+        daoTarjeta.deleteTarjetas(ZonaCompartida.getUsuarioRegistrado().id)
+        daoTarjeta.addTarjetas(ZonaCompartida.getTarjetas())
     }
 
     /**
@@ -158,7 +194,8 @@ class MainActivity : AppCompatActivity() {
                     hilo.join()
                     if(hilo.isInstruccionRealizada){
                         Toast.makeText(this,"Mazo eliminado correctamente", Toast.LENGTH_SHORT).show()
-                        // actualizarMazos()
+                        ZonaCompartida.getMazos().removeAt(position)
+                        adapter.notifyDataSetChanged()
                     }else{
                         Toast.makeText(this,"Error, no se pudo eliminar el mazo",Toast.LENGTH_SHORT).show()
                     }
@@ -232,6 +269,13 @@ class MainActivity : AppCompatActivity() {
         }
 
         return fichero.toString()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        cargarMazos()
+        cargarTarjetas()
+        adapter.notifyDataSetChanged()
     }
 
     override fun onDestroy() {

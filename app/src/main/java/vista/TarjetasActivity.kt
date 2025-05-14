@@ -31,7 +31,10 @@ class TarjetasActivity : AppCompatActivity() {
         setContentView(R.layout.activity_tarjetas)
         ZonaCompartida.addActivity(this)
 
-        cargarTarjetas()
+        // cargarTarjetas()
+        lvTarjetas = findViewById<ListView>(R.id.lvTarjetas)
+        adapter = AdaptadorTarjeta(this, ZonaCompartida.getTarjetas())
+        lvTarjetas.adapter = adapter
 
         btnVolver = findViewById<Button>(R.id.btnVolverTarjetas)
 
@@ -70,6 +73,8 @@ class TarjetasActivity : AppCompatActivity() {
                     hilo.join()
                     if(hilo.isInstruccionRealizada){
                         Toast.makeText(this,"Tarjeta eliminada correctamente",Toast.LENGTH_SHORT).show()
+                        ZonaCompartida.getTarjetas().removeAt(position)
+                        adapter.notifyDataSetChanged()
                     }else{
                         Toast.makeText(this,"Error, no se pudo eliminar la tarjeta",Toast.LENGTH_SHORT).show()
                     }
@@ -79,7 +84,9 @@ class TarjetasActivity : AppCompatActivity() {
         }
     }
 
-    fun cargarTarjetas(){
+
+    override fun onResume() {
+        super.onResume()
         val hilo = SocketConnection("TarjetasPorUsuario")
         hilo.setIdUsuario(ZonaCompartida.getUsuarioRegistrado().id)
         hilo.start()

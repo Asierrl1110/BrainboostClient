@@ -54,6 +54,7 @@ class MazoActivity : AppCompatActivity() {
                     hilo.join()
                     if(hilo.isInstruccionRealizada){
                         Toast.makeText(this,"Mazo creado correctamente",Toast.LENGTH_SHORT).show()
+                        ZonaCompartida.getMazos().add(mazo)
                         finish()
                     }else{
                         Toast.makeText(this,"Error, no se pudo añadir el mazo",Toast.LENGTH_SHORT).show()

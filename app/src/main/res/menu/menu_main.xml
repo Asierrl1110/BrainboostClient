@@ -13,6 +13,11 @@
         android:icon="@drawable/person_20dp"
         android:title="Item"
         app:showAsAction="always"/>
-    <item android:id="@+id/menuTarjetas" android:title="Ventana Tarjetas" />
+    <item
+        android:id="@+id/menuTarjetas"
+        android:title="Item"
+        android:icon="@drawable/cards_20dp"
+        app:showAsAction="always" />
+    <item android:id="@+id/menuImportar" android:title="Importar Mazo" />
     <item android:id="@+id/menuSalir" android:title="Salir" />
 </menu>

@@ -7,6 +7,7 @@ import android.widget.EditText
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
+import com.example.clienteproyectofinal.DAOUsuario
 import com.example.clienteproyectofinal.R
 import com.example.clienteproyectofinal.SocketConnection
 import com.example.clienteproyectofinal.ZonaCompartida
@@ -46,6 +47,8 @@ class LoginActivity : AppCompatActivity() {
             // Comprobamos si se ha podido iniciar sesión o no
             if(hilo.isInstruccionRealizada){
                 Toast.makeText(this,"Inicio de sesion correctamente",Toast.LENGTH_SHORT).show()
+                val daoUsuario = DAOUsuario(this)
+                daoUsuario.addUser(usuario)
                 val intent = Intent(this, MainActivity::class.java)
                 this.startActivity(intent)
             }else{

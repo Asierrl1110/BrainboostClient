@@ -3,6 +3,8 @@ package com.example.clienteproyectofinal;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.net.InetSocketAddress;
+import java.net.SocketAddress;
 import java.util.List;
 
 import modelo.DTOMazo;
@@ -150,8 +152,8 @@ public class SocketConnection extends Thread {
                     SocketManager.getSocket().close();
                     break;
                 case "IdMazo":
-                    oos.writeObject(mazo);
-                    oos.flush();
+                    // oos.writeObject(mazo);
+                    // oos.flush();
                     idMazo = ois.readInt();
                     SocketManager.getSocket().close();
                     break;

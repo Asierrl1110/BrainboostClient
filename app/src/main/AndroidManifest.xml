@@ -16,6 +16,9 @@
         android:theme="@style/Theme.ClienteProyectoFinal"
         tools:targetApi="31">
         <activity
+            android:name=".DAOUsuario"
+            android:exported="false" />
+        <activity
             android:name="vista.EstudioActivity"
             android:exported="false" />
         <activity
