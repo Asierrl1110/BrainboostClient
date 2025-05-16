@@ -12,7 +12,7 @@ public class SocketManager {
 
     public static Socket getSocket(){
         if(socket == null || socket.isClosed()){
-            String ip = "10.0.2.2";
+            String ip = "192.168.1.90";
             int port = 2000;
             try {
                 socket = new Socket(ip,port);

@@ -25,17 +25,6 @@ public class DTOUsuario implements Serializable {
 
     private String rol;
 
-    public DTOUsuario(int id, String nombreUsuario, String clave, String nombre, String apellidos, Date fechaNacimiento, String genero, String rol) {
-        this.id = id;
-        this.nombreUsuario = nombreUsuario;
-        this.clave = clave;
-        this.nombre = nombre;
-        this.apellidos = apellidos;
-        this.fechaNacimiento = fechaNacimiento;
-        this.genero = genero;
-        this.rol = rol;
-    }
-
     public DTOUsuario(int id, String nombreUsuario, String clave) {
         this.id = id;
         this.nombreUsuario = nombreUsuario;
