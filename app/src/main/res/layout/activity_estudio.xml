@@ -19,40 +19,60 @@
       android:textColor="#1E3A8A"
       android:textSize="36sp"
       android:textStyle="bold"
-      app:layout_constraintBottom_toTopOf="@+id/tvPregunta"
+      app:layout_constraintBottom_toTopOf="@+id/etPregunta"
       app:layout_constraintEnd_toEndOf="parent"
       app:layout_constraintStart_toStartOf="parent"
       app:layout_constraintTop_toTopOf="parent"
       app:layout_constraintVertical_bias="0.4" />
 
-  <TextView
-      android:id="@+id/tvPregunta"
-      android:layout_width="wrap_content"
+  <EditText
+      android:id="@+id/etPregunta"
+      android:layout_width="0dp"
       android:layout_height="wrap_content"
-      android:text="Pregunta"
+      android:layout_marginHorizontal="32dp"
+      android:enabled="false"
+      android:hint="Escribe la pregunta"
+      android:inputType="text"
       android:textColor="#000000"
       android:textSize="24sp"
-      android:textStyle="bold"
-      app:layout_constraintBottom_toTopOf="@+id/tvRespuesta"
+      app:layout_constraintBottom_toTopOf="@+id/etRespuesta"
       app:layout_constraintEnd_toEndOf="parent"
-      app:layout_constraintHorizontal_bias="0.503"
       app:layout_constraintStart_toStartOf="parent"
-      app:layout_constraintTop_toBottomOf="@id/tvTitulo"
-      app:layout_constraintVertical_bias="0.0" />
+      app:layout_constraintTop_toBottomOf="@id/tvTitulo" />
 
-  <TextView
-      android:id="@+id/tvRespuesta"
-      android:layout_width="wrap_content"
-      android:layout_height="wrap_content"
-      android:text="Respuesta"
+  <!-- Botón Mostrar Solución -->
+  <EditText
+      android:id="@+id/etRespuesta"
+      android:layout_width="349dp"
+      android:layout_height="266dp"
+      android:layout_marginHorizontal="32dp"
+      android:enabled="false"
+      android:gravity="top|start"
+      android:hint="Escribe la respuesta"
+      android:inputType="textMultiLine"
+      android:maxLines="10"
+      android:minLines="4"
       android:textColor="#374151"
       android:textSize="22sp"
-      android:visibility="invisible"
       app:layout_constraintBottom_toTopOf="@+id/btnMostrarSolucion"
+      app:layout_constraintEnd_toEndOf="parent"
+      app:layout_constraintHorizontal_bias="0.483"
+      app:layout_constraintStart_toStartOf="parent"
+      app:layout_constraintTop_toBottomOf="@id/etPregunta" />
+
+  <Button
+      android:id="@+id/btnIniciarEstudio"
+      android:layout_width="300dp"
+      android:layout_height="60dp"
+      android:backgroundTint="#3B82F6"
+      android:text="Iniciar Estudio"
+      android:textColor="#FFFFFF"
+      app:layout_constraintBottom_toTopOf="@+id/btnIncorrecta"
       app:layout_constraintEnd_toEndOf="parent"
       app:layout_constraintHorizontal_bias="0.495"
       app:layout_constraintStart_toStartOf="parent"
-      app:layout_constraintTop_toBottomOf="@id/tvPregunta" />
+      app:layout_constraintTop_toBottomOf="@id/etRespuesta"
+      app:layout_constraintVertical_bias="0.0" />
 
   <Button
       android:id="@+id/btnMostrarSolucion"
@@ -60,13 +80,14 @@
       android:layout_height="60dp"
       android:backgroundTint="#3B82F6"
       android:text="Mostrar Solución"
+      android:visibility="gone"
       android:textColor="#FFFFFF"
       app:layout_constraintBottom_toTopOf="@+id/btnIncorrecta"
       app:layout_constraintEnd_toEndOf="parent"
-      app:layout_constraintHorizontal_bias="0.495"
       app:layout_constraintStart_toStartOf="parent"
-      app:layout_constraintTop_toBottomOf="@id/tvRespuesta" />
+      app:layout_constraintTop_toBottomOf="@id/etRespuesta" />
 
+  <!-- Botón Incorrecta -->
   <Button
       android:id="@+id/btnIncorrecta"
       android:layout_width="160dp"
@@ -80,6 +101,7 @@
       app:layout_constraintStart_toStartOf="parent"
       app:layout_constraintBottom_toTopOf="@+id/btnAcabarEstudio" />
 
+  <!-- Botón Correcta -->
   <Button
       android:id="@+id/btnCorrecta"
       android:layout_width="160dp"
@@ -93,6 +115,7 @@
       app:layout_constraintEnd_toEndOf="parent"
       app:layout_constraintBottom_toTopOf="@+id/btnAcabarEstudio" />
 
+  <!-- Botón Acabar Estudio -->
   <Button
       android:id="@+id/btnAcabarEstudio"
       android:layout_width="300dp"

@@ -10,29 +10,29 @@ public class DTOMazo implements Serializable {
 
     private String categoria;
 
+    private String descripcion;
+
     private int idUsuario;
 
-    public DTOMazo(String nombre, String categoria) {
-        this.nombre = nombre;
-        this.categoria = categoria;
-    }
-
-    public DTOMazo(int id, String nombre, String categoria) {
+    public DTOMazo(int id, String nombre, String categoria, String descripcion) {
         this.id = id;
         this.nombre = nombre;
         this.categoria = categoria;
+        this.descripcion = descripcion;
     }
 
-    public DTOMazo(int id, String nombre, String categoria, int idUsuario) {
+    public DTOMazo(int id, String nombre, String categoria, String descripcion, int idUsuario) {
         this.id = id;
         this.nombre = nombre;
         this.categoria = categoria;
+        this.descripcion = descripcion;
         this.idUsuario = idUsuario;
     }
 
-    public DTOMazo(String nombre, String categoria, int idUsuario) {
+    public DTOMazo(String nombre, String categoria, String descripcion, int idUsuario) {
         this.nombre = nombre;
         this.categoria = categoria;
+        this.descripcion = descripcion;
         this.idUsuario = idUsuario;
     }
 
@@ -46,6 +46,14 @@ public class DTOMazo implements Serializable {
 
     public String getNombre() {
         return nombre;
+    }
+
+    public String getDescripcion() {
+        return descripcion;
+    }
+
+    public void setDescripcion(String descripcion) {
+        this.descripcion = descripcion;
     }
 
     public void setNombre(String nombre) {

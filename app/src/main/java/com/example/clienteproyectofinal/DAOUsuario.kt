@@ -18,6 +18,7 @@ class DAOUsuario(context : Context) : SQLiteOpenHelper(context, DATABASE_NAME, n
         private const val COLUMN_IDMAZO = "IdMazo"
         private const val COLUMN_NOMBREMAZO = "Nombre"
         private const val COLUMN_CATEGORIA = "Categoria"
+        private const val COLUMN_DESCRIPCION = "Descripcion"
         private const val TABLE_TARJETAS = "Tarjetas"
         private const val COLUMN_IDTARJETA = "IdTarjeta"
         private const val COLUMN_PREGUNTA = "Pregunta"
@@ -44,6 +45,7 @@ class DAOUsuario(context : Context) : SQLiteOpenHelper(context, DATABASE_NAME, n
             $COLUMN_IDMAZO INTEGER PRIMARY KEY,
             $COLUMN_NOMBREMAZO TEXT NOT NULL,
             $COLUMN_CATEGORIA TEXT NOT NULL,
+            $COLUMN_DESCRIPCION TEXT NOT NULL,
             $COLUMN_IDUSUARIO INTEGER NOT NULL,
             FOREIGN KEY($COLUMN_IDUSUARIO) REFERENCES $TABLE_USERS($COLUMN_IDUSUARIO) ON DELETE CASCADE
         )
@@ -55,6 +57,7 @@ class DAOUsuario(context : Context) : SQLiteOpenHelper(context, DATABASE_NAME, n
             $COLUMN_PREGUNTA TEXT NOT NULL,
             $COLUMN_RESPUESTA TEXT NOT NULL,
             $COLUMN_IDMAZO INTEGER NOT NULL,
+            NombreMazo TEXT NOT NULL,
             FOREIGN KEY($COLUMN_IDMAZO) REFERENCES $TABLE_MAZOS($COLUMN_IDMAZO) ON DELETE CASCADE
         )
     """
@@ -74,7 +77,7 @@ class DAOUsuario(context : Context) : SQLiteOpenHelper(context, DATABASE_NAME, n
         val db = writableDatabase
         val registro = ContentValues()
         registro.put("IdUsuario",usuario.id)
-        registro.put("Nombre",usuario.nombre)
+        registro.put("Nombre",usuario.nombreUsuario)
         registro.put("Clave",usuario.clave)
         db.insert(TABLE_USERS,null,registro)
     }
@@ -82,7 +85,7 @@ class DAOUsuario(context : Context) : SQLiteOpenHelper(context, DATABASE_NAME, n
     fun changePassword(clave : String, usuario : DTOUsuario){
         val db = writableDatabase
         val sql = "UPDATE Usuarios SET Clave = ? WHERE IdUsuario = ? AND Nombre = ? AND Clave = ?"
-        val args = arrayOf(clave, usuario.id, usuario.nombre, usuario.clave)
+        val args = arrayOf(clave, usuario.id, usuario.nombreUsuario, usuario.clave)
 
         db.execSQL(sql, args)
     }
@@ -90,9 +93,39 @@ class DAOUsuario(context : Context) : SQLiteOpenHelper(context, DATABASE_NAME, n
     fun deleteUser(usuario: DTOUsuario){
         val db = writableDatabase
         val sql = "DELETE FROM Usuarios WHERE IdUsuario = ? AND Nombre = ? AND Clave = ?"
-        val args = arrayOf(usuario.id, usuario.nombre, usuario.clave)
+        val args = arrayOf(usuario.id, usuario.nombreUsuario, usuario.clave)
 
         db.execSQL(sql,args)
+    }
+
+    /*
+    fun signup(usuario : DTOUsuario) : Boolean{
+        val db = readableDatabase
+        var inicio : Boolean = false
+        val cursor : Cursor = db.rawQuery("SELECT COUNT(*) FROM $TABLE_USERS WHERE Nombre = ${usuario.nombre} AND Clave = ${usuario.clave}",null)
+        if(cursor.moveToFirst()){
+            if(cursor.getInt(0) == 1){
+                inicio = true
+            }
+        }
+        return inicio
+    }
+    */
+
+    fun signup(usuario: DTOUsuario): Boolean {
+        val db = readableDatabase
+        var inicio = false
+
+        val query = "SELECT * FROM $TABLE_USERS WHERE Nombre = ? AND Clave = ?"
+        val cursor = db.rawQuery(query, arrayOf(usuario.nombreUsuario, usuario.clave))
+
+        if (cursor.moveToFirst()) {
+            inicio = true
+            val usuario = DTOUsuario(cursor.getInt(0),cursor.getString(1),cursor.getString(2))
+            ZonaCompartida.setUsuarioRegistrado(usuario)
+        }
+        cursor.close()
+        return inicio
     }
 
 }

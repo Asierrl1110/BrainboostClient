@@ -1,3 +1,26 @@
 <resources>
     <string name="app_name">BrainBoost</string>
+    <string name="e_Conexion">No hay conexión con el servidor</string>
+    <string name="a_InicioSesion">Inicio de sesion correctamente</string>
+    <string name="e_NoRegistrado">Usuario no registrado</string>
+    <string name="a_Registrado">Usuario registrado correctamente</string>
+    <string name="e_AnadirUsuario">"Error al intentar añadir el usuario</string>
+    <string name="e_NoTarjetas">Este mazo no tiene tarjetas</string>
+    <string name="a_Sincronizado">Sincronizados los datos del servidor</string>
+    <string name="a_Exportado">Mazo exportado correctamente</string>
+    <string name="a_MazoEliminado">Mazo eliminado correctamente</string>
+    <string name="e_MazoNoEliminado">Error, no se pudo eliminar el mazo</string>
+    <string name="a_MazoCreado">Mazo creado correctamente</string>
+    <string name="e_NoAnadirMazo">Error, no se pudo añadir el mazo</string>
+    <string name="a_MazoModificado">Mazo modificado correctamente</string>
+    <string name="e_NoModificarMazo">Error, no se pudo modificados el mazo</string>
+    <string name="a_TarjetaAnadida">Tarjeta añadida correctamente</string>
+    <string name="e_TarjetaNoAnadida">Error al añadir la tarjeta</string>
+    <string name="a_TarjetaModificada">Tarjeta modificada correctamente</string>
+    <string name="e_TarjetaNoModificada">Error al modificar la tarjeta</string>
+    <string name="a_UsuarioEliminado">Usuario eliminado correctamente</string>
+    <string name="e_UsuarioNoEliminado">Error, no se pudo eliminar el perfil</string>
+    <string name="e_ClaveIncorrecta">Error, Contraseña incorrecta</string>
+    <string name="a_ClaveCambiada">Contraseña cambiada correctamente</string>
+    <string name="e_ClaveNoCambiada">Error al cambiar la contraseña</string>
 </resources>

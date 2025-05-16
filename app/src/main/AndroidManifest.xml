@@ -28,10 +28,10 @@
             android:name="vista.TarjetasActivity"
             android:exported="false" />
         <activity
-            android:name="vista.TarjetaActivity"
+            android:name="vista.GestionTarjetaActivity"
             android:exported="false" />
         <activity
-            android:name="vista.MazoActivity"
+            android:name="vista.GestionMazoActivity"
             android:exported="false" />
         <activity
             android:name="vista.MainActivity"

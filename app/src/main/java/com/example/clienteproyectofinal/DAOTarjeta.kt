@@ -4,6 +4,7 @@ import android.content.ContentValues
 import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
+import modelo.DTOMazo
 import modelo.DTOTarjeta
 
 class DAOTarjeta(context : Context) : SQLiteOpenHelper(context, DATABASE_NAME, null, DATABASE_VERSION) {
@@ -42,6 +43,7 @@ class DAOTarjeta(context : Context) : SQLiteOpenHelper(context, DATABASE_NAME, n
             registro.put("Pregunta",tarjeta.pregunta)
             registro.put("Respuesta",tarjeta.respuesta)
             registro.put("IdMazo",tarjeta.idMazo)
+            registro.put("NombreMazo",tarjeta.nombreMazo)
             db.insert(TABLE_TARJETAS,null,registro)
         }
     }
@@ -82,6 +84,24 @@ class DAOTarjeta(context : Context) : SQLiteOpenHelper(context, DATABASE_NAME, n
         } finally {
             db.endTransaction()
         }
+    }
+
+    fun getTarjetas(idUsuario: Int) : List<DTOTarjeta>{
+        val db = readableDatabase
+        val listaTarjetas = ArrayList<DTOTarjeta>()
+
+        val sql = "SELECT * FROM $TABLE_TARJETAS WHERE $COLUMN_IDMAZO IN ( SELECT $COLUMN_IDMAZO FROM $TABLE_MAZOS WHERE $COLUMN_IDUSUARIO = ?)"
+
+        val cursor = db.rawQuery(sql, arrayOf(idUsuario.toString()))
+
+        if(cursor.moveToFirst()){
+            listaTarjetas.add(DTOTarjeta(cursor.getInt(0),cursor.getString(1),cursor.getString(2),cursor.getInt(3),cursor.getString(4)))
+            while(cursor.moveToNext()){
+                listaTarjetas.add(DTOTarjeta(cursor.getInt(0),cursor.getString(1),cursor.getString(2),cursor.getInt(3),cursor.getString(4)))
+            }
+        }
+
+        return listaTarjetas
     }
 
 

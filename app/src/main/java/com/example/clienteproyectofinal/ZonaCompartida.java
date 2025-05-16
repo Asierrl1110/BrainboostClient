@@ -12,7 +12,7 @@ import modelo.DTOUsuario;
  */
 public class ZonaCompartida {
 
-    private static boolean isOnline = false;
+    private static boolean isOnline;
     // Variable que almacena los usuarios del usuario que esta con la sesión iniciada
     private static DTOUsuario usuarioRegistrado;
 
