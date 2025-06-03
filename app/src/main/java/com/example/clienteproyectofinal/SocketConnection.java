@@ -1,14 +1,14 @@
 package com.example.clienteproyectofinal;
 
 import android.content.Context;
-import android.widget.Toast;
+import android.net.ConnectivityManager;
+import android.net.Network;
+import android.net.NetworkCapabilities;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.net.InetSocketAddress;
 import java.net.Socket;
-import java.net.SocketAddress;
 import java.util.List;
 
 import modelo.DTOMazo;
@@ -20,30 +20,28 @@ import modelo.DTOUsuario;
  */
 public class SocketConnection extends Thread {
 
-    private Context context = null;
+    private Context context;
 
-    // Vairiable que almaena que instrucciones quiere realizar el cliente en la conexión con el servidor
+    // Variable que almacena que instrucciones quiere realizar el cliente en la conexión con el servidor
     private final String caso;
 
+    // Variable que almacena el id del usuario registrado
     private int idUsuario;
 
+    // Variable que almacena el id del mazo del nuevo mazo importado
     private int idMazo;
 
+    // Variable booleana que almacena si la instrucción se ha podido realizar correctamente
     private boolean instruccionRealizada;
 
+    // Variable que almacena los datos de un usuario
     private DTOUsuario usuario;
 
+    // Variables que almacenan datos de mazos
     private DTOMazo mazo, mazoAntiguo;
 
+    // Variables que almacenan datos de tarjetas
     private DTOTarjeta tarjeta, tarjetaAntigua;
-
-    public void setIdUsuario(int idUsuario) {
-        this.idUsuario = idUsuario;
-    }
-
-    public void setIdMazo(int idMazo){
-        this.idMazo = idMazo;
-    }
 
     public int getIdMazo(){
         return idMazo;
@@ -58,161 +56,198 @@ public class SocketConnection extends Thread {
         this.context=context;
     }
 
-    public SocketConnection(String caso){
+    public SocketConnection(String caso, int idUsuario, Context context){
         this.caso=caso;
+        this.idUsuario=idUsuario;
+        this.context=context;
     }
 
-    public SocketConnection(String caso, DTOUsuario usuario){
+    public SocketConnection(String caso, DTOUsuario usuario, Context context){
         this.caso=caso;
         this.usuario=usuario;
+        this.context=context;
     }
 
-    public SocketConnection(String caso, DTOMazo mazo){
+    public SocketConnection(String caso, DTOMazo mazo, Context context){
         this.caso=caso;
         this.mazo=mazo;
+        this.context=context;
     }
 
-    public SocketConnection(String caso, DTOMazo mazo, DTOMazo mazoAntiguo){
+    public SocketConnection(String caso, DTOMazo mazo, DTOMazo mazoAntiguo, Context context){
         this.caso=caso;
         this.mazo=mazo;
         this.mazoAntiguo=mazoAntiguo;
+        this.context=context;
     }
 
-    public SocketConnection(String caso, DTOTarjeta tarjeta, DTOTarjeta tarjetaAntigua) {
+    public SocketConnection(String caso, DTOTarjeta tarjeta, DTOTarjeta tarjetaAntigua, Context context) {
         this.caso = caso;
         this.tarjeta = tarjeta;
         this.tarjetaAntigua = tarjetaAntigua;
+        this.context=context;
     }
 
-    public SocketConnection(String caso, DTOTarjeta tarjeta){
+    public SocketConnection(String caso, DTOTarjeta tarjeta, Context context){
         this.caso=caso;
         this.tarjeta=tarjeta;
+        this.context=context;
     }
 
     public void run(){
-        if(!caso.equals("Conexion")){
+        if(hayWifi()){
             // Objetos pra enviar y recibir información con el servidor
+            Socket socket = null;
             ObjectOutputStream oos;
             ObjectInputStream ois;
             try{
-                oos = new ObjectOutputStream(SocketManager.getSocket().getOutputStream());
-                ois = new ObjectInputStream(SocketManager.getSocket().getInputStream());
-                // Escribimos el caso/instrucción de lo que queremos hacer en la conexión con el servidor
-                oos.writeUTF(caso);
-                oos.flush();
-                // En función de la instrucción realizaremos una serie de instrucciones o no
-                switch (caso){
-                    case "Registrarse":
-                        oos.writeObject(usuario);
-                        oos.flush();
-                        instruccionRealizada = ois.readBoolean();
-                        SocketManager.getSocket().close();
-                        break;
+                socket = SocketManager.getSocket();
+                // Comprobamos si hemos obtenido conexión con el servidor o no
+                // En caso de que no haya conexión, el socket es nulo
+                if(socket != null) {
+                    oos = new ObjectOutputStream(socket.getOutputStream());
+                    ois = new ObjectInputStream(socket.getInputStream());
+                    // Escribimos el caso/instrucción de lo que queremos hacer en la conexión con el servidor
+                    oos.writeUTF(caso);
+                    oos.flush();
+                    // En función de la instrucción realizaremos una serie de instrucciones o no
+                    switch (caso){
+                        case "Registrarse":
+                            oos.writeObject(usuario);
+                            oos.flush();
+                            instruccionRealizada = ois.readBoolean();
+                            break;
 
-                    case "IniciarSesion":
-                        oos.writeObject(usuario);
-                        oos.flush();
-                        instruccionRealizada = ois.readBoolean();
-                        if(instruccionRealizada){
-                            usuario = (DTOUsuario) ois.readObject();
-                            ZonaCompartida.setUsuarioRegistrado(usuario);
-                        }
-                        SocketManager.getSocket().close();
-                        break;
+                        case "IniciarSesion":
+                            oos.writeObject(usuario);
+                            oos.flush();
+                            instruccionRealizada = ois.readBoolean();
+                            if(instruccionRealizada){
+                                usuario = (DTOUsuario) ois.readObject();
+                                ZonaCompartida.setUsuarioRegistrado(usuario);
+                            }
+                            break;
 
-                    case "BorrarUsuario":
-                        oos.writeObject(usuario);
-                        oos.flush();
-                        instruccionRealizada = ois.readBoolean();
-                        SocketManager.getSocket().close();
-                        break;
-                    case "CambiarClave":
-                        oos.writeObject(usuario);
-                        oos.flush();
-                        instruccionRealizada = ois.readBoolean();
-                        SocketManager.getSocket().close();
-                        break;
+                        case "BorrarUsuario":
+                            oos.writeObject(usuario);
+                            oos.flush();
+                            instruccionRealizada = ois.readBoolean();
+                            break;
+                        case "CambiarClave":
+                            oos.writeObject(usuario);
+                            oos.flush();
+                            instruccionRealizada = ois.readBoolean();
+                            break;
 
-                    case "AnadirMazo":
-                        oos.writeObject(mazo);
-                        oos.flush();
-                        instruccionRealizada = ois.readBoolean();
-                        SocketManager.getSocket().close();
-                        break;
+                        case "AnadirMazo":
+                            oos.writeObject(mazo);
+                            oos.flush();
+                            instruccionRealizada = ois.readBoolean();
+                            break;
 
-                    case "ModificarMazo":
-                        oos.writeObject(mazo);
-                        oos.flush();
-                        oos.writeObject(mazoAntiguo);
-                        oos.flush();
-                        instruccionRealizada = ois.readBoolean();
-                        SocketManager.getSocket().close();
-                        break;
+                        case "ModificarMazo":
+                            oos.writeObject(mazo);
+                            oos.flush();
+                            oos.writeObject(mazoAntiguo);
+                            oos.flush();
+                            instruccionRealizada = ois.readBoolean();
+                            break;
 
-                    case "BorrarMazo":
-                        oos.writeObject(mazo);
-                        oos.flush();
-                        instruccionRealizada = ois.readBoolean();
-                        SocketManager.getSocket().close();
-                        break;
+                        case "BorrarMazo":
+                            oos.writeObject(mazo);
+                            oos.flush();
+                            instruccionRealizada = ois.readBoolean();
+                            break;
 
-                    case "Mazos":
-                        oos.writeInt(idUsuario);
-                        oos.flush();
-                        List<DTOMazo> mazos = (List<DTOMazo>) ois.readObject();
-                        ZonaCompartida.setMazos(mazos);
-                        SocketManager.getSocket().close();
-                        break;
-                    case "IdMazo":
-                        // oos.writeObject(mazo);
-                        // oos.flush();
-                        idMazo = ois.readInt();
-                        SocketManager.getSocket().close();
-                        break;
+                        case "Mazos":
+                            oos.writeInt(idUsuario);
+                            oos.flush();
+                            List<DTOMazo> mazos = (List<DTOMazo>) ois.readObject();
+                            ZonaCompartida.setMazos(mazos);
+                            break;
+                        case "IdMazo":
+                            idMazo = ois.readInt();
+                            break;
 
-                    case "AnadirTarjeta":
-                        oos.writeObject(tarjeta);
-                        oos.flush();
-                        instruccionRealizada = ois.readBoolean();
-                        SocketManager.getSocket().close();
-                        break;
-                    case "ModificarTarjeta":
-                        oos.writeObject(tarjeta);
-                        oos.flush();
-                        oos.writeObject(tarjetaAntigua);
-                        oos.flush();
-                        instruccionRealizada = ois.readBoolean();
-                        SocketManager.getSocket().close();
-                        break;
-                    case "BorrarTarjeta":
-                        oos.writeObject(tarjeta);
-                        oos.flush();
-                        instruccionRealizada = ois.readBoolean();
-                        SocketManager.getSocket().close();
-                        break;
-                    case "TarjetasPorUsuario":
-                        oos.writeInt(idUsuario);
-                        oos.flush();
-                        List<DTOTarjeta> tarjetas = (List<DTOTarjeta>) ois.readObject();
-                        ZonaCompartida.setTarjetas(tarjetas);
-                        SocketManager.getSocket().close();
-                        break;
+                        case "AnadirTarjeta":
+                            oos.writeObject(tarjeta);
+                            oos.flush();
+                            instruccionRealizada = ois.readBoolean();
+                            break;
+                        case "ModificarTarjeta":
+                            oos.writeObject(tarjeta);
+                            oos.flush();
+                            oos.writeObject(tarjetaAntigua);
+                            oos.flush();
+                            instruccionRealizada = ois.readBoolean();
+                            break;
+                        case "BorrarTarjeta":
+                            oos.writeObject(tarjeta);
+                            oos.flush();
+                            instruccionRealizada = ois.readBoolean();
+                            break;
+                        case "TarjetasPorUsuario":
+                            oos.writeInt(idUsuario);
+                            oos.flush();
+                            List<DTOTarjeta> tarjetas = (List<DTOTarjeta>) ois.readObject();
+                            ZonaCompartida.setTarjetas(tarjetas);
+                            break;
+                    }
+                }else{
+                    funcionalidadesOffline();
                 }
             }catch (IOException ioException){
                 ioException.printStackTrace();
             }catch (ClassNotFoundException classNotFoundException){
                 classNotFoundException.printStackTrace();
+            }finally {
+                try{
+                    if(socket != null){
+                        SocketManager.getSocket().close();
+                    }
+                }catch (IOException exception){
+                }
             }
         }else{
-            try (Socket socket = new Socket()) {
-                socket.connect(new InetSocketAddress("192.168.1.90", 2000), 3000);
-                System.out.println("Servidor disponible.");
-                ZonaCompartida.setIsOnline(true);
-            } catch (IOException e) {
-                System.out.println("No se pudo conectar.");
-                ZonaCompartida.setIsOnline(false);
-            }
+            funcionalidadesOffline();
+        }
+    }
 
+    // Método que contiene las funcionalidades del modo offline
+    private void funcionalidadesOffline() {
+        // Hay algunas funcionalidades que aun sin conexión se pueden realizar, como iniciar sesion
+        // y recuperar los mazos y tarjetas de la base de datos local
+        switch (caso){
+            case "IniciarSesion":
+                DAOUsuario daoUsuario = new DAOUsuario(context);
+                instruccionRealizada = daoUsuario.signup(usuario);
+                break;
+            case "Mazos":
+                DAOMazo daoMazo = new DAOMazo(context);
+                List<DTOMazo> listaMazos = daoMazo.getMazos(ZonaCompartida.getUsuarioRegistrado().getId());
+                ZonaCompartida.setMazos(listaMazos);
+                break;
+            case "TarjetasPorUsuario":
+                DAOTarjeta daoTarjeta = new DAOTarjeta(context);
+                List<DTOTarjeta> listaTarjetas = daoTarjeta.getTarjetas(ZonaCompartida.getUsuarioRegistrado().getId());
+                ZonaCompartida.setTarjetas(listaTarjetas);
+                break;
+        }
+    }
+
+    /**
+     * Método que comprueba si el dispositivo esta conectado a una red wifi o no
+     * @return booleano de si el usuario esta conectado a wifi o no
+     */
+    private boolean hayWifi(){
+        ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        Network activeNetwork = cm.getActiveNetwork();
+        NetworkCapabilities capabilities = cm.getNetworkCapabilities(activeNetwork);
+
+        if (capabilities != null && capabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI)){
+            return true;
+        }else{
+            return false;
         }
     }
 }

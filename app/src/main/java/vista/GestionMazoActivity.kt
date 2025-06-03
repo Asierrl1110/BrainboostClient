@@ -59,15 +59,19 @@ class GestionMazoActivity : AppCompatActivity() {
          * Método que se ejecuta cuando el usuario le da click al boton de añadir mazo
          */
         btnAnadirMazo.setOnClickListener(){
-            when (caso){
-                "AnadirMazo" ->{
-                    val mazo = DTOMazo(etNombreMazo.text.toString(),spCategoria.selectedItem.toString(),etDescripcion.text.toString(),ZonaCompartida.getUsuarioRegistrado().id)
-                    anadirMazo(mazo)
-                }
-                "ModificarMazo" ->{
-                    val mazoNuevo = DTOMazo(idMazo,etNombreMazo.text.toString(),spCategoria.selectedItem.toString(),etDescripcion.text.toString(),ZonaCompartida.getUsuarioRegistrado().id)
-                    val mazoAntiguo = DTOMazo(idMazo,nombre,categoria,descripcion,ZonaCompartida.getUsuarioRegistrado().id)
-                    modificarMazo(mazoNuevo, mazoAntiguo)
+            if(etNombreMazo.text.toString().trim().equals("") || etDescripcion.text.toString().trim().equals("")){
+               Toast.makeText(this,"Faltan campos",Toast.LENGTH_SHORT).show()
+            }else{
+                when (caso){
+                    "AnadirMazo" ->{
+                        val mazo = DTOMazo(etNombreMazo.text.toString(),spCategoria.selectedItem.toString(),etDescripcion.text.toString(),ZonaCompartida.getUsuarioRegistrado().id)
+                        anadirMazo(mazo)
+                    }
+                    "ModificarMazo" ->{
+                        val mazoNuevo = DTOMazo(idMazo,etNombreMazo.text.toString(),spCategoria.selectedItem.toString(),etDescripcion.text.toString(),ZonaCompartida.getUsuarioRegistrado().id)
+                        val mazoAntiguo = DTOMazo(idMazo,nombre,categoria,descripcion,ZonaCompartida.getUsuarioRegistrado().id)
+                        modificarMazo(mazoNuevo, mazoAntiguo)
+                    }
                 }
             }
         }
@@ -82,7 +86,7 @@ class GestionMazoActivity : AppCompatActivity() {
      * Método que añade un mazo a la bbdd del servidor
      */
     fun anadirMazo(mazo : DTOMazo){
-        val hilo = SocketConnection("AnadirMazo",mazo)
+        val hilo = SocketConnection("AnadirMazo",mazo,this)
         hilo.start()
         hilo.join()
         // Comprobamos si se ha añadido el mazo o no
@@ -99,7 +103,7 @@ class GestionMazoActivity : AppCompatActivity() {
      * Método que modifica los datos de un mazo existente de la bbdd del servidor
      */
     fun modificarMazo(mazo : DTOMazo, mazoAntiguo : DTOMazo){
-        val hilo = SocketConnection("ModificarMazo",mazo,mazoAntiguo)
+        val hilo = SocketConnection("ModificarMazo",mazo,mazoAntiguo,this)
         hilo.start()
         hilo.join()
         // Comprobamos si se ha modificado el mazo no

@@ -98,7 +98,7 @@ class SignActivity : AppCompatActivity() {
                 etNombre.text.isNotEmpty() && etApellidos.text.isNotEmpty() && etFechaNacimiento.text.isNotEmpty()){
                 // Cogemos los datos que el usuario ha introducido en los cuadros de texto
                 val usuario = DTOUsuario(etNombreUsuario.text.toString(),etPassword.text.toString(), etNombre.text.toString(), etApellidos.text.toString(), etFechaNacimiento.text.toString(), spGenero.selectedItem.toString(), spRol.selectedItem.toString())
-                val hilo = SocketConnection("Registrarse",usuario)
+                val hilo = SocketConnection("Registrarse",usuario, this)
                 hilo.start()
                 hilo.join()
                 // Comprobamos si se ha podido registrar o no en el servidor

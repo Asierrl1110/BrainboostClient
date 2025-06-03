@@ -9,8 +9,6 @@
     android:background="#F3F8FF"
     tools:context="vista.EstudioActivity">
 
-  <!-- Título BrainBoost -->
-
   <TextView
       android:id="@+id/tvTitulo"
       android:layout_width="wrap_content"
@@ -25,14 +23,18 @@
       app:layout_constraintTop_toTopOf="parent"
       app:layout_constraintVertical_bias="0.4" />
 
+
   <EditText
       android:id="@+id/etPregunta"
       android:layout_width="0dp"
       android:layout_height="wrap_content"
       android:layout_marginHorizontal="32dp"
       android:enabled="false"
+      android:gravity="top|start"
       android:hint="Escribe la pregunta"
-      android:inputType="text"
+      android:inputType="textMultiLine"
+      android:maxLines="3"
+      android:minLines="2"
       android:textColor="#000000"
       android:textSize="24sp"
       app:layout_constraintBottom_toTopOf="@+id/etRespuesta"
@@ -40,7 +42,6 @@
       app:layout_constraintStart_toStartOf="parent"
       app:layout_constraintTop_toBottomOf="@id/tvTitulo" />
 
-  <!-- Botón Mostrar Solución -->
   <EditText
       android:id="@+id/etRespuesta"
       android:layout_width="349dp"
@@ -56,7 +57,7 @@
       android:textSize="22sp"
       app:layout_constraintBottom_toTopOf="@+id/btnMostrarSolucion"
       app:layout_constraintEnd_toEndOf="parent"
-      app:layout_constraintHorizontal_bias="0.483"
+      app:layout_constraintHorizontal_bias="0.516"
       app:layout_constraintStart_toStartOf="parent"
       app:layout_constraintTop_toBottomOf="@id/etPregunta" />
 
@@ -87,7 +88,6 @@
       app:layout_constraintStart_toStartOf="parent"
       app:layout_constraintTop_toBottomOf="@id/etRespuesta" />
 
-  <!-- Botón Incorrecta -->
   <Button
       android:id="@+id/btnIncorrecta"
       android:layout_width="160dp"
@@ -101,7 +101,6 @@
       app:layout_constraintStart_toStartOf="parent"
       app:layout_constraintBottom_toTopOf="@+id/btnAcabarEstudio" />
 
-  <!-- Botón Correcta -->
   <Button
       android:id="@+id/btnCorrecta"
       android:layout_width="160dp"
@@ -115,7 +114,6 @@
       app:layout_constraintEnd_toEndOf="parent"
       app:layout_constraintBottom_toTopOf="@+id/btnAcabarEstudio" />
 
-  <!-- Botón Acabar Estudio -->
   <Button
       android:id="@+id/btnAcabarEstudio"
       android:layout_width="300dp"

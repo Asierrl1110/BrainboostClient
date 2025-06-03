@@ -1,6 +1,7 @@
 package com.example.clienteproyectofinal;
 
 import java.io.IOException;
+import java.net.InetSocketAddress;
 import java.net.Socket;
 
 /**
@@ -12,20 +13,17 @@ public class SocketManager {
 
     public static Socket getSocket(){
         if(socket == null || socket.isClosed()){
-            String ip = "192.168.1.90";
+            String ip = "10.0.2.2";
             int port = 2000;
+            int timeout = 2000;
             try {
-                socket = new Socket(ip,port);
-                ZonaCompartida.setIsOnline(true);
+                socket = new Socket();
+                socket.connect(new InetSocketAddress(ip, port), timeout);
             } catch (IOException e) {
-                ZonaCompartida.setIsOnline(false);
-                throw new RuntimeException(e);
+                socket = null;
             }
         }
         return socket;
     }
 
-    public static boolean isConnected() {
-        return socket != null && socket.isConnected() && !socket.isClosed();
-    }
 }

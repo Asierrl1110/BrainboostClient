@@ -44,7 +44,8 @@ class PerfilActivity : AppCompatActivity() {
         enableEdgeToEdge()
         setContentView(R.layout.activity_perfil)
         ZonaCompartida.addActivity(this)
-        val formato = SimpleDateFormat("yyyy-MM-dd")
+        // val formato = SimpleDateFormat("yyyy-MM-dd")
+        val formato = SimpleDateFormat("dd-MM-yyyy")
 
         tvNombreUsuario = findViewById<TextView>(R.id.tvNombreUsuario)
         tvNombre = findViewById<TextView>(R.id.tvNombre)
@@ -67,32 +68,14 @@ class PerfilActivity : AppCompatActivity() {
          * Método que se ejecuta cuando el usuario pulsa sobre el botón de cambiar clave
          */
         btnCambiarClave.setOnClickListener {
-            if(ZonaCompartida.isIsOnline()){
-                mostrarAlertDialog()
-            }else{
-                Toast.makeText(this,R.string.e_Conexion,Toast.LENGTH_SHORT).show()
-            }
+                alertDialogModificarClave()
         }
 
         /**
          * Método que se ejecuta cuando el usuario pulsa sobre el botón de borrar un usuario
          */
         btnBorrarUsuario.setOnClickListener {
-            if(ZonaCompartida.isIsOnline()){
-                val hilo = SocketConnection("BorrarUsuario",ZonaCompartida.getUsuarioRegistrado())
-                hilo.start()
-                hilo.join()
-                if(hilo.isInstruccionRealizada){
-                    Toast.makeText(this,R.string.a_UsuarioEliminado,Toast.LENGTH_SHORT).show()
-                    val daoUsuario = DAOUsuario(this)
-                    daoUsuario.deleteUser(ZonaCompartida.getUsuarioRegistrado())
-                    ZonaCompartida.cerrarSesion()
-                }else{
-                    Toast.makeText(this,R.string.e_UsuarioNoEliminado,Toast.LENGTH_SHORT).show()
-                }
-            }else{
-                Toast.makeText(this,R.string.e_Conexion,Toast.LENGTH_SHORT).show()
-            }
+                alertDialogEliminarUsuario()
         }
     }
 
@@ -104,7 +87,7 @@ class PerfilActivity : AppCompatActivity() {
     /**
      * Método que muestra el alert dialog de cambio de contraseña
      */
-    fun mostrarAlertDialog(){
+    fun alertDialogModificarClave(){
         // Montamos el alert dialog para poder introducir los datos de contraseña
         val builder = AlertDialog.Builder(this)
         val view = layoutInflater.inflate(R.layout.layout_cambiar_clave,null)
@@ -133,7 +116,7 @@ class PerfilActivity : AppCompatActivity() {
     fun modificarClave(){
         val usuario = DTOUsuario(ZonaCompartida.getUsuarioRegistrado().nombreUsuario,etClaveAntigua.text.toString(),etClaveNueva.text.toString())
         // Modificamos los datos del usuario en la bbdd del servidor
-        val hilo = SocketConnection("CambiarClave",usuario)
+        val hilo = SocketConnection("CambiarClave",usuario, this)
         hilo.start()
         hilo.join()
         if(hilo.isInstruccionRealizada){
@@ -145,6 +128,39 @@ class PerfilActivity : AppCompatActivity() {
             daoUsuario.changePassword(etClaveNueva.text.toString(),DTOUsuario(ZonaCompartida.getUsuarioRegistrado().id,ZonaCompartida.getUsuarioRegistrado().nombreUsuario,etClaveAntigua.text.toString()))
         }else{
             Toast.makeText(this,R.string.e_ClaveNoCambiada,Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    /**
+     * Método que muestra el alert dialog de eliminacion de usuarios
+     */
+    fun alertDialogEliminarUsuario(){
+        val builder = AlertDialog.Builder(this)
+        builder.setTitle("Eliminación perfil")
+        builder.setMessage("¿Seguro que quieres eliminar el perfil?")
+        builder.setPositiveButton("Aceptar") { dialog, _ ->
+            eliminarUsuario()
+        }
+        builder.setNegativeButton("Cancelar") { dialog, _ ->
+            dialog.cancel()
+        }
+        builder.show()
+    }
+
+    /**
+     * Método que elimina el usuario registrado de la base de datos
+     */
+    fun eliminarUsuario(){
+        val hilo = SocketConnection("BorrarUsuario",ZonaCompartida.getUsuarioRegistrado(), this)
+        hilo.start()
+        hilo.join()
+        if(hilo.isInstruccionRealizada){
+            Toast.makeText(this,R.string.a_UsuarioEliminado,Toast.LENGTH_SHORT).show()
+            val daoUsuario = DAOUsuario(this)
+            daoUsuario.deleteUser(ZonaCompartida.getUsuarioRegistrado())
+            ZonaCompartida.cerrarSesion()
+        }else{
+            Toast.makeText(this,R.string.e_UsuarioNoEliminado,Toast.LENGTH_SHORT).show()
         }
     }
 }

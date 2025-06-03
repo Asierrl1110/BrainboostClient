@@ -12,7 +12,7 @@ import modelo.DTOUsuario;
  */
 public class ZonaCompartida {
 
-    private static boolean isOnline;
+    // private static boolean isOnline;
     // Variable que almacena los usuarios del usuario que esta con la sesión iniciada
     private static DTOUsuario usuarioRegistrado;
 
@@ -44,10 +44,6 @@ public class ZonaCompartida {
         ZonaCompartida.tarjetasEstudio = tarjetas;
     }
 
-    public static void setIsOnline(boolean isOnline){
-        ZonaCompartida.isOnline = isOnline;
-    }
-
     public static DTOUsuario getUsuarioRegistrado() {
         return usuarioRegistrado;
     }
@@ -62,10 +58,6 @@ public class ZonaCompartida {
 
      public static List<DTOTarjeta> getTarjetasEstudio(){
         return tarjetasEstudio;
-    }
-
-    public static boolean isIsOnline(){
-        return isOnline;
     }
 
     public static void addActivity(Activity activity) {

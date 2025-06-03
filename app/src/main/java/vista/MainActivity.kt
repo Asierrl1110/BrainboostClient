@@ -31,6 +31,7 @@ import modelo.DTOTarjeta
 import java.io.BufferedReader
 import java.io.InputStreamReader
 
+
 class MainActivity : AppCompatActivity() {
 
     private lateinit var resultLauncher: ActivityResultLauncher<Intent>
@@ -61,13 +62,9 @@ class MainActivity : AppCompatActivity() {
          * Método que se ejecuta cuando el usuario pulsa en el botón flotante
          */
         btnFlotante.setOnClickListener{
-            if(ZonaCompartida.isIsOnline()){
                 val intent = Intent(this, GestionMazoActivity::class.java)
                 intent.putExtra("Caso","AnadirMazo")
                 this.startActivity(intent)
-            }else{
-                Toast.makeText(this,R.string.e_Conexion,Toast.LENGTH_SHORT).show()
-            }
         }
 
         /**
@@ -130,15 +127,11 @@ class MainActivity : AppCompatActivity() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when(item.itemId){
             R.id.menuImportar ->{
-                if(ZonaCompartida.isIsOnline()){
                     val intent = Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
                         addCategory(Intent.CATEGORY_OPENABLE)
                         type = "text/comma-separated-values"
                     }
                     resultLauncher.launch(intent)
-                }else{
-                    Toast.makeText(this,R.string.e_Conexion,Toast.LENGTH_SHORT).show()
-                }
             }
             R.id.menuSalir ->{
                 finishAffinity()
@@ -152,14 +145,10 @@ class MainActivity : AppCompatActivity() {
                 startActivity(intent)
             }
             R.id.menuSincronismo ->{
-                if(ZonaCompartida.isIsOnline()){
                     cargarMazos()
                     cargarTarjetas()
                     adapter.notifyDataSetChanged()
                     Toast.makeText(this,R.string.a_Sincronizado,Toast.LENGTH_SHORT).show()
-                }else{
-                    Toast.makeText(this,R.string.e_Conexion,Toast.LENGTH_SHORT).show()
-                }
             }
         }
         return super.onOptionsItemSelected(item)
@@ -170,18 +159,12 @@ class MainActivity : AppCompatActivity() {
      * Método que carga los mazos del usuario
      */
     private fun cargarMazos(){
+                val hilo = SocketConnection("Mazos",ZonaCompartida.getUsuarioRegistrado().id,this)
+                hilo.start()
+                hilo.join()
         val daoMazo = DAOMazo(this)
-        if(ZonaCompartida.isIsOnline()){
-            val hilo = SocketConnection("Mazos")
-            hilo.setIdUsuario(ZonaCompartida.getUsuarioRegistrado().id)
-            hilo.start()
-            hilo.join()
-            daoMazo.deleteMazos(ZonaCompartida.getUsuarioRegistrado().id)
-            daoMazo.addMazos(ZonaCompartida.getMazos(),ZonaCompartida.getUsuarioRegistrado().id)
-        }else{
-            val listaMazos = daoMazo.getMazos(ZonaCompartida.getUsuarioRegistrado().id)
-            ZonaCompartida.setMazos(listaMazos)
-        }
+        daoMazo.deleteMazos(ZonaCompartida.getUsuarioRegistrado().id)
+        daoMazo.addMazos(ZonaCompartida.getMazos(),ZonaCompartida.getUsuarioRegistrado().id)
         adapter = AdaptadorMazo(this,ZonaCompartida.getMazos())
         lvMazos.adapter = adapter
     }
@@ -190,18 +173,12 @@ class MainActivity : AppCompatActivity() {
      * Método que carga las tarjetas del usuario
      */
     private fun cargarTarjetas(){
-        val daoTarjeta = DAOTarjeta(this)
-        if(ZonaCompartida.isIsOnline()){
-            val hilo = SocketConnection("TarjetasPorUsuario")
-            hilo.setIdUsuario(ZonaCompartida.getUsuarioRegistrado().id)
+            val hilo = SocketConnection("TarjetasPorUsuario",ZonaCompartida.getUsuarioRegistrado().id,this)
             hilo.start()
             hilo.join()
-            daoTarjeta.deleteTarjetas(ZonaCompartida.getUsuarioRegistrado().id)
+        val daoTarjeta = DAOTarjeta(this)
+        daoTarjeta.deleteTarjetas(ZonaCompartida.getUsuarioRegistrado().id)
             daoTarjeta.addTarjetas(ZonaCompartida.getTarjetas())
-        }else{
-            val listaTarjetas = daoTarjeta.getTarjetas(ZonaCompartida.getUsuarioRegistrado().id)
-            ZonaCompartida.setTarjetas(listaTarjetas)
-        }
     }
 
     /**
@@ -259,26 +236,31 @@ class MainActivity : AppCompatActivity() {
                     // Importamos el mazo con los datos
                     valores = line.toString().split(";")
                     val mazo = DTOMazo(valores.get(0),valores.get(1),valores.get(2),ZonaCompartida.getUsuarioRegistrado().id)
-                    val hilo = SocketConnection("AnadirMazo",mazo)
+                    val hilo = SocketConnection("AnadirMazo",mazo, this)
                     hilo.start()
                     hilo.join()
-                    // Leemos las siguientes lineas y añadimos tarjetas con los datos de esas lineas
-                    line = reader.readLine()
-                    if(line != null){
-                        // Obtenemos el id del nuevo mazo creado para añadir tarjetas a ese mazo
-                        val nuevohilo = SocketConnection("IdMazo")
-                        nuevohilo.start()
-                        nuevohilo.join()
-                        mazo.id = nuevohilo.idMazo
-                        while(line != null){
-                            valores = line.toString().split(";")
-                            val tarjeta = DTOTarjeta(valores.get(0),valores.get(1),mazo.id)
-                            val hiloTarjeta = SocketConnection("AnadirTarjeta",tarjeta)
-                            hiloTarjeta.start()
-                            hiloTarjeta.join()
-                            line = reader.readLine()
+                    if(hilo.isInstruccionRealizada){
+                        // Leemos las siguientes lineas y añadimos tarjetas con los datos de esas lineas
+                        line = reader.readLine()
+                        if(line != null){
+                            // Obtenemos el id del nuevo mazo creado para añadir tarjetas a ese mazo
+                            val nuevohilo = SocketConnection("IdMazo",this)
+                            nuevohilo.start()
+                            nuevohilo.join()
+                            mazo.id = nuevohilo.idMazo
+                            while(line != null){
+                                valores = line.toString().split(";")
+                                val tarjeta = DTOTarjeta(valores.get(0),valores.get(1),mazo.id)
+                                val hiloTarjeta = SocketConnection("AnadirTarjeta",tarjeta, this)
+                                hiloTarjeta.start()
+                                hiloTarjeta.join()
+                                line = reader.readLine()
+                            }
                         }
+                    }else{
+                        Toast.makeText(this,R.string.e_NoAnadirMazo,Toast.LENGTH_SHORT).show()
                     }
+
                 }
             }
         }
@@ -321,9 +303,8 @@ class MainActivity : AppCompatActivity() {
      * Método que borra un mazo de la bbdd del servidor
      */
     private fun borrarMazo(mazo : DTOMazo, position: Int){
-        if(ZonaCompartida.isIsOnline()){
             mazo.idUsuario = ZonaCompartida.getUsuarioRegistrado().id
-            val hilo = SocketConnection("BorrarMazo",mazo)
+            val hilo = SocketConnection("BorrarMazo",mazo,this)
             hilo.start()
             hilo.join()
             if(hilo.isInstruccionRealizada){
@@ -333,16 +314,12 @@ class MainActivity : AppCompatActivity() {
             }else{
                 Toast.makeText(this,R.string.e_MazoNoEliminado,Toast.LENGTH_SHORT).show()
             }
-        }else{
-            Toast.makeText(this,R.string.e_Conexion,Toast.LENGTH_SHORT).show()
-        }
     }
 
     /**
      * Método que modifica un mazo de la bbdd del servidor
      */
     private fun modificarMazo(mazo: DTOMazo) {
-        if(ZonaCompartida.isIsOnline()){
             val intent = Intent(this, GestionMazoActivity::class.java)
             intent.putExtra("Caso","ModificarMazo")
             intent.putExtra("Nombre",mazo.nombre)
@@ -350,22 +327,15 @@ class MainActivity : AppCompatActivity() {
             intent.putExtra("Descripcion",mazo.descripcion)
             intent.putExtra("IdMazo",mazo.id)
             this.startActivity(intent)
-        }else{
-            Toast.makeText(this,R.string.e_Conexion,Toast.LENGTH_SHORT).show()
-        }
     }
 
     /**
      * Método que añade un mazo a la bbdd del servidor
      */
     private fun anadirTarjeta(idMazo : Int){
-        if(ZonaCompartida.isIsOnline()){
             val intent = Intent(this,GestionTarjetaActivity::class.java)
             intent.putExtra("Caso","AnadirTarjeta")
             intent.putExtra("IdMazo",idMazo)
             this.startActivity(intent)
-        }else{
-            Toast.makeText(this,R.string.e_Conexion,Toast.LENGTH_SHORT).show()
-        }
     }
 }

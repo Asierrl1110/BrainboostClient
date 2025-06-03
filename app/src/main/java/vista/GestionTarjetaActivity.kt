@@ -51,15 +51,19 @@ class GestionTarjetaActivity : AppCompatActivity() {
          * Método que se ejecuta cuando el usuario le da click al boton de añadir tarjeta
          */
         btnAnadirTarjeta.setOnClickListener(){
-            when (caso){
-                "AnadirTarjeta" ->{
-                    val tarjeta = DTOTarjeta(etPregunta.text.toString(),etRespuesta.text.toString(),idMazo)
-                    anadirTarjeta(tarjeta)
-                }
-                "ModificarTarjeta" ->{
-                    val tarjetaAntigua = DTOTarjeta(idTarjeta,pregunta,respuesta,idMazo)
-                    val tarjetaNueva = DTOTarjeta(idTarjeta,etPregunta.text.toString(),etRespuesta.text.toString(),idMazo)
-                    modificarTarjeta(tarjetaNueva,tarjetaAntigua)
+            if(etPregunta.text.toString().trim().equals("") || etRespuesta.text.toString().trim().equals("")){
+                Toast.makeText(this,"Faltan campos por rellenar",Toast.LENGTH_SHORT).show()
+            }else{
+                when (caso){
+                    "AnadirTarjeta" ->{
+                        val tarjeta = DTOTarjeta(etPregunta.text.toString(),etRespuesta.text.toString(),idMazo)
+                        anadirTarjeta(tarjeta)
+                    }
+                    "ModificarTarjeta" ->{
+                        val tarjetaAntigua = DTOTarjeta(idTarjeta,pregunta,respuesta,idMazo)
+                        val tarjetaNueva = DTOTarjeta(idTarjeta,etPregunta.text.toString(),etRespuesta.text.toString(),idMazo)
+                        modificarTarjeta(tarjetaNueva,tarjetaAntigua)
+                    }
                 }
             }
         }
@@ -74,7 +78,7 @@ class GestionTarjetaActivity : AppCompatActivity() {
      * Método que añade una nueva tarjeta en la bbdd del servidor
      */
     fun anadirTarjeta(tarjeta : DTOTarjeta){
-        val hilo = SocketConnection("AnadirTarjeta",tarjeta)
+        val hilo = SocketConnection("AnadirTarjeta",tarjeta,this)
         hilo.start()
         hilo.join()
         // Comprobamos si se ha podido añadir la tarjeta o no
@@ -90,7 +94,7 @@ class GestionTarjetaActivity : AppCompatActivity() {
      * Método que modifica los datos de una tarjeta existente de la bbdd del servidor
      */
     fun modificarTarjeta(tarjetaNueva : DTOTarjeta, tarjetaAntigua : DTOTarjeta){
-        val hilo = SocketConnection("ModificarTarjeta",tarjetaNueva,tarjetaAntigua)
+        val hilo = SocketConnection("ModificarTarjeta",tarjetaNueva,tarjetaAntigua,this)
         hilo.start()
         hilo.join()
         // Comprobamos si se ha podida modificar la tarjeta o no

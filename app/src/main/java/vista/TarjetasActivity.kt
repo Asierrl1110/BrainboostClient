@@ -46,7 +46,6 @@ class TarjetasActivity : AppCompatActivity() {
         lvTarjetas.setOnItemClickListener { parent, view, position, id ->
             // Si hay conexion con el servidor, lanzamos la activity de gestion de tarjetas
             // con el objetivo de modificar los datos de una tarjeta
-            if(ZonaCompartida.isIsOnline()){
                 val intent = Intent(this,GestionTarjetaActivity::class.java)
                 val tarjeta = ZonaCompartida.getTarjetas()[position]
                 intent.putExtra("Caso","ModificarTarjeta")
@@ -55,9 +54,6 @@ class TarjetasActivity : AppCompatActivity() {
                 intent.putExtra("Respuesta",tarjeta.respuesta)
                 intent.putExtra("IdMazo",tarjeta.idMazo)
                 startActivity(intent)
-            }else{
-                Toast.makeText(this,R.string.e_Conexion,Toast.LENGTH_SHORT).show()
-            }
         }
 
         /**
@@ -90,11 +86,7 @@ class TarjetasActivity : AppCompatActivity() {
         menuPopup.setOnMenuItemClickListener { menuItem ->
             when(menuItem.itemId){
                 R.id.menuBorrarTarjeta ->{
-                    if(ZonaCompartida.isIsOnline()){
                         borrarTarjeta(position)
-                    }else{
-                        Toast.makeText(this,R.string.e_Conexion,Toast.LENGTH_SHORT).show()
-                    }
                 }
             }
             true
@@ -106,7 +98,7 @@ class TarjetasActivity : AppCompatActivity() {
      */
     fun borrarTarjeta(position: Int){
         val tarjeta = ZonaCompartida.getTarjetas()[position]
-        val hilo = SocketConnection("BorrarTarjeta",tarjeta)
+        val hilo = SocketConnection("BorrarTarjeta",tarjeta, this)
         hilo.start()
         hilo.join()
         if(hilo.isInstruccionRealizada){
